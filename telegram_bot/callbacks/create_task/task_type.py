@@ -20,9 +20,10 @@ async def task_type_select_once_handler(callback: CallbackQuery, state: FSMConte
 
     return await callback.answer()
 
+@router.callback_query(F.data.startswith("task_type:recurring"))
+async def task_type_select_once_handler(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(task_type=TaskType.RECURRING.value)
+    # await show_task_confirmation(callback, state)
 
-
-    # -----------------------------------------
-    # ЦИКЛИЧЕСКАЯ
-    # -----------------------------------------
+    await callback.answer("Этот функционал пока что дорабатывается")
 
