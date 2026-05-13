@@ -38,6 +38,11 @@ async def show_templates_selection(message_or_callback, state: FSMContext, task_
 async def show_groups_selection(message_or_callback, state: FSMContext, group_service: GroupService):
     """Показывает список групп"""
     groups = group_service.get_all_groups()
+    if not groups:
+        await state.clear()
+        text = "Бот не состоит ни в одной группе. Добавьте бота в группу"
+        await message_or_callback.message.edit_text(text, reply_markup=None, parse_mode="HTML")
+        return
 
     keyboard = keyboards.groups_keyboard(groups=groups, page=0)
     text = "<b>👥 Выберите группу для задачи:</b>"
