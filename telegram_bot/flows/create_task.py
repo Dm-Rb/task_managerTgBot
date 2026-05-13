@@ -40,7 +40,7 @@ async def show_groups_selection(message_or_callback, state: FSMContext, group_se
     groups = group_service.get_all_groups()
     if not groups:
         await state.clear()
-        text = "Бот не состоит ни в одной группе. Добавьте бота в группу"
+        text = "‼️ Отмена создания задачи: бот не состоит ни в одной группе. Сперва добавьте бота в группу"
         await message_or_callback.message.edit_text(text, reply_markup=None, parse_mode="HTML")
         return
 
