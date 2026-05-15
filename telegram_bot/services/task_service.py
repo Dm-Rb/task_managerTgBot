@@ -73,7 +73,8 @@ class TaskService:
         priority: str,
         task_type: TaskType,
         created_at: datetime,
-        every_n_days: int or None = None
+        every_n_days: int or None = None,
+        address: str or None = None
     ) -> Task:
         """
         Создать и добавить задачу в cache
@@ -81,21 +82,16 @@ class TaskService:
         task_id = uuid4().hex[:16]  # генерим уникальный id
         task = Task(
             task_id=task_id,
-
             title=title,
             description=description,
-
+            address=address,
             group_id=group_id,
             group_title=group_title,
-
             creator_id=creator_id,
             creator_name=creator_name,
-
             performer_id=performer_id,
             performer_name=performer_name,
-
             priority=priority,
-
             status=TaskStatus.CREATED,
             task_type=task_type,
             created_at=created_at,

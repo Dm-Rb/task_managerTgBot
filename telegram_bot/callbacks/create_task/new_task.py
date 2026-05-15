@@ -25,7 +25,8 @@ async def create_new_task_handker(callback: CallbackQuery, state: FSMContext, ru
         performer_name=state_data['performer_name'],
         priority=state_data['priority'],
         task_type=state_data['task_type'],
-        every_n_days=state_data.get('every_n_days', None)
+        every_n_days=state_data.get('every_n_days', None),
+        address=state_data.get('address', None)
             )
 
     prew_text = "🆕 <b>Вы создали новую задачу</b>\n\n"

@@ -77,19 +77,19 @@ async def template_back_handler(callback: CallbackQuery, state: FSMContext, task
     await callback.answer()
 
 
-# раскомментировать колбек адресов
-# @router.callback_query(F.data == "task_template:continue")
-# async def template_continue_handler(callback: CallbackQuery, state: FSMContext, task_service):
-#     """Перейти на этап выбора группы"""
-#
-#     await show_address_selection(callback, state, task_service)
-#     await callback.answer()
-
-
-# удалить этот кусок
+#раскомментировать колбек адресов
 @router.callback_query(F.data == "task_template:continue")
-async def template_continue_handler(callback: CallbackQuery, state: FSMContext, group_service):
+async def template_continue_handler(callback: CallbackQuery, state: FSMContext, task_service):
     """Перейти на этап выбора группы"""
 
-    await show_groups_selection(callback, state, group_service)
+    await show_address_selection(callback, state, task_service, '')
     await callback.answer()
+
+
+# # удалить этот кусок
+# @router.callback_query(F.data == "task_template:continue")
+# async def template_continue_handler(callback: CallbackQuery, state: FSMContext, group_service):
+#     """Перейти на этап выбора группы"""
+#
+#     await show_groups_selection(callback, state, group_service)
+#     await callback.answer()

@@ -87,7 +87,7 @@ class TaskRuntimeService:
             priority: str,
             task_type: TaskType,
             every_n_days=None,
-            is_active=True
+            address=None,
     ) -> Task or None:
         """
         Создаёт задачу, сохраняет её и уведомляет исполнителя
@@ -106,16 +106,16 @@ class TaskRuntimeService:
             priority=priority,
             task_type=task_type,
             created_at=datetime.now(timezone.utc),
-            every_n_days=every_n_days
+            every_n_days=every_n_days,
+            address=address
                     )
-        if is_active:
-            task_text = messages_build.get_notification_task_message('new', task)
-            # Отправляем мессагу исполнителю с кнопкой Принять в работу
-            keyboard_performer = keyboards.performer_task_keyboard(task.task_id, task.status)
-            await self.notifications.send_to_user(user_id=performer_id, text=task_text, reply_markup=keyboard_performer)
+        task_text = messages_build.get_notification_task_message('new', task)
+        # Отправляем мессагу исполнителю с кнопкой Принять в работу
+        keyboard_performer = keyboards.performer_task_keyboard(task.task_id, task.status)
+        await self.notifications.send_to_user(user_id=performer_id, text=task_text, reply_markup=keyboard_performer)
 
-            # Отправляем мессагу в группу (без кнопки)
-            await self.notifications.send_to_group(group_id=group_id, text=task_text)
+        # Отправляем мессагу в группу (без кнопки)
+        await self.notifications.send_to_group(group_id=group_id, text=task_text)
         return task
 
     async def accept_task(self, task_id: str) -> Task or None:
@@ -137,14 +137,13 @@ class TaskRuntimeService:
         # =====================================
         # Уведомления
         # =====================================
-        if task.is_active:
-            task_text = messages_build.get_notification_task_message('process', task)
-            # Отправляем мессагу создателю без кнопки
+        task_text = messages_build.get_notification_task_message('process', task)
+        # Отправляем мессагу создателю без кнопки
 
-            await self.notifications.send_to_user(user_id=task.creator_id, text=task_text)
+        await self.notifications.send_to_user(user_id=task.creator_id, text=task_text)
 
-            # Отправляем мессагу в группу (без кнопки)
-            await self.notifications.send_to_group(group_id=task.group_id, text=task_text)
+        # Отправляем мессагу в группу (без кнопки)
+        await self.notifications.send_to_group(group_id=task.group_id, text=task_text)
         return task
 
     async def cancel_task(self, task_id: str) -> Task or None:

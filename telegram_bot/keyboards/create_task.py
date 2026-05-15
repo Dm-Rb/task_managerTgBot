@@ -64,8 +64,6 @@ def task_templates_keyboard(task_templates: list[TaskTemplate], page: int = 0) -
 def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) -> InlineKeyboardMarkup:
 
 
-
-
     builder = InlineKeyboardBuilder()
     # кнопка добавить шаблон
     builder.button(

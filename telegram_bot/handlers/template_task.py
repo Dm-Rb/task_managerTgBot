@@ -8,21 +8,7 @@ from telegram_bot.services.task_service import TaskService
 from telegram_bot.flows.create_task import show_templates_selection
 
 
-router = Router(name="handlers_create_task")
-
-
-@router.message(Command("create_task"))
-async def create_task_start(message: Message, state: FSMContext, task_service: TaskService, user_service: UserService):
-    """ Старт создания задачи """
-    # очищаем состояние
-    await state.clear()
-    is_user_admin = await user_service.is_user_admin(message.from_user.id)
-    if not is_user_admin:
-        return await message.answer('У вас не достаточно прав для создания задач')
-
-    # Делегируем отображение в flow
-    await show_templates_selection(message, state, task_service)
-    await state.set_state(CreateTaskStates.choosing_template)
+router = Router()
 
 
 @router.message(CreateTaskStates.waiting_template_title)
@@ -51,7 +37,7 @@ async def template_description_handler(message: Message, state: FSMContext, task
         description=description
     )
     # Делегируем отображение в flow
-    await show_templates_selection(message, state, task_service, "✅ Шаблон создан\n\n")
+    await show_templates_selection(message, state, task_service, "💬 Новый шаблон \n\n")
     await state.set_state(CreateTaskStates.choosing_template)
 
 

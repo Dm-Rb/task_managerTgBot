@@ -10,8 +10,9 @@ from telegram_bot.services.group_service import GroupService
 from telegram_bot.services.task_service import TaskService
 
 
-async def show_templates_selection(message_or_callback, state: FSMContext, task_service: TaskService, additional_text=""):
-    """Показывает список шаблонов (используется и при старте, и после создания)"""
+async def show_templates_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
+                                   task_service: TaskService, additional_text=""):
+    """Показывает список шаблонов задач"""
     # message_or_callback < сюда может прийти или message, или callback
     task_templates = task_service.get_all_task_templates()
 
@@ -34,20 +35,30 @@ async def show_templates_selection(message_or_callback, state: FSMContext, task_
 
     await state.set_state(CreateTaskStates.choosing_template)
 
-async def show_address_selection(callback: CallbackQuery, state: FSMContext, task_service):
-    """
-    Выбор адреса задачи
-    """
+async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
+                                 task_service: TaskService, additional_text=''):
+    """Показывает список шаблонов адресов"""
+    addresses_templates = task_service.get_all_address_templates()
 
-    templates = task_service.get_all_address_templates()
+    text = f"{additional_text}🏘 <b>Укажите адрес:</b>"
 
-    await callback.message.edit_text(
-        text="🏘 <b>Укажите адрес:</b>",
-        reply_markup=keyboards.address_templates_keyboard(templates),
-        parse_mode="HTML"
-    )
+    keyboard = keyboards.address_templates_keyboard(addresses_templates)
+
+    if isinstance(message_or_callback, Message):  # отправили  /create_task
+        await message_or_callback.answer(
+            text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )
+    else:  # нажатие на инлайн кнопку
+        await message_or_callback.message.edit_text(
+            text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )
 
     await state.set_state(CreateTaskStates.choosing_address)
+
 
 
 async def show_groups_selection(message_or_callback, state: FSMContext, group_service: GroupService):

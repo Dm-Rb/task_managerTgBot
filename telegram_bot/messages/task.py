@@ -22,6 +22,10 @@ async def get_task_creation_message_by_state_data(state: FSMContext) -> str:
             desc = desc[:397] + "..."
         lines.append(f"<b>Описание:</b> <i>{desc}</i>")
 
+    # === Адрес ===
+    if address := data.get("address"):
+        lines.append(f"<b>Адрес:</b> <i>{address}</i>")
+
     # === Группа ===
     if group_title := data.get("group_title"):
         lines.append(f"<b>Группа:</b> <i>{group_title}</i>")
@@ -171,6 +175,9 @@ def get_task_message_by_task_obj(task: Task) -> str:
             priority_text = f"{priority_emoji} {task.priority}" if priority_emoji else task.priority
 
         lines.append(f"<b>Приоритет:</b> <i>{priority_text}</i>")
+
+    if hasattr(task, 'address') and task.address:
+        lines.append(f"<b>Адрес:</b> <i>{task.address}</i>")
 
     # === Описание ===
     if hasattr(task, 'description') and task.description:
