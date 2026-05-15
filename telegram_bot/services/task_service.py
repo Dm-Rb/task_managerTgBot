@@ -1,4 +1,4 @@
-from telegram_bot.models.task import Task, TaskTemplate, TaskStatus, TaskType
+from telegram_bot.models.task import Task, TaskTemplate, TaskStatus, TaskType, AddressTemplate
 from telegram_bot.storage.task_cache import TaskCache
 import datetime
 from telegram_bot.storage.task_indexes import TaskIndexes
@@ -9,23 +9,36 @@ class TaskService:
 
     def __init__(self, cache: TaskCache, database):
         self.task_cache: dict[str, Task] = cache.tasks
-        self.templates_cache: list[TaskTemplate] = cache.templates
+        self.task_templates_cache: list[TaskTemplate] = cache.task_templates
+        self.address_templates_cache: list[AddressTemplate] = cache.address_templates
         self.database = database
         self.indexes = TaskIndexes()
 
-    def add_template(self, title: str, description: str):
-        self.templates_cache.append(
+    def add_task_template(self, title: str, description: str):
+        self.task_templates_cache.append(
             TaskTemplate(
                 title=title,
                 description=description
             )
         )
 
-    def get_all_templates(self) -> list:
-        return self.templates_cache
+    def get_all_task_templates(self) -> list:
+        return self.task_templates_cache
 
-    def get_template(self, index) -> TaskTemplate or None:
-        return self.templates_cache[index]
+    def get_task_template(self, index) -> TaskTemplate or None:
+        return self.task_templates_cache[index]
+
+    # адреса
+
+    def add_address_template(self, address: str):
+
+        self.address_templates_cache.append(
+            AddressTemplate(address=address)
+        )
+
+    def get_all_address_templates(self):
+
+        return self.address_templates_cache
 
     ######################
 

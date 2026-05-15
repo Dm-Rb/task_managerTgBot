@@ -23,14 +23,6 @@ class TaskType(Enum):
     def get_by_index(cls, index: int):
         return list(cls)[index].value
 
-
-class RecurrenceInterval(Enum):
-    DAILY = "daily"
-    EVERY_N_DAYS = "every_n_days"
-    # WEEKLY = "weekly"
-    # MONTHLY = "monthly"
-
-
 class TaskPriority(Enum):
     NORMAL = "Обычный"
     HIGH = "Высокий"
@@ -61,7 +53,7 @@ class Task:
     created_at: datetime
 
     # === Поля с значениями по умолчанию (должны быть в конце) ===
-
+    address: Optional[str] = None
     status: TaskStatus = TaskStatus.CREATED
     task_type: TaskType = TaskType.ONCE
 
@@ -80,6 +72,9 @@ class TaskTemplate:
     description: str
 
 
+@dataclass
+class AddressTemplate:
+    address: str
 
 
 

@@ -46,7 +46,7 @@ async def template_description_handler(message: Message, state: FSMContext, task
     # добавляем новый шаблон в
     description = message.text
 
-    task_service.add_template(
+    task_service.add_task_template(
         title=title,
         description=description
     )

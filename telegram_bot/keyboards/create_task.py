@@ -1,6 +1,6 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardMarkup
-from telegram_bot.models.task import TaskTemplate, TaskPriority, TaskType
+from telegram_bot.models.task import TaskTemplate, TaskPriority, TaskType, AddressTemplate
 from telegram_bot.models.group import Group
 from telegram_bot.models.user import User
 
@@ -58,6 +58,59 @@ def task_templates_keyboard(task_templates: list[TaskTemplate], page: int = 0) -
         rows.append(len(pagination_buttons))
 
     builder.adjust(*rows)
+
+    return builder.as_markup()
+
+def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) -> InlineKeyboardMarkup:
+
+
+
+
+    builder = InlineKeyboardBuilder()
+    # кнопка добавить шаблон
+    builder.button(
+        text="➕ Добавить шаблон",
+        callback_data="address:create"
+    )
+
+    # кнопка без адреса
+    builder.button(
+        text="🚫 Без адреса",
+        callback_data="address:none"
+    )
+
+    start = page * PAGE_SIZE
+    end = start + PAGE_SIZE
+
+    current_templates = templates[start:end]
+    # шаблоны адресов
+
+    for index, template in enumerate(current_templates, start=start):
+        builder.button(
+            text=template.address,
+            callback_data=f"address:select:{index}"
+        )
+
+    # пагинация
+    nav_buttons = []
+
+    if page > 0:
+        nav_buttons.append(
+            ("⬅️", f"address:page:{page - 1}")
+        )
+
+    if end < len(templates):
+        nav_buttons.append(
+            ("➡️", f"address:page:{page + 1}")
+        )
+
+    for text, callback_data in nav_buttons:
+        builder.button(
+            text=text,
+            callback_data=callback_data
+        )
+
+    builder.adjust(1)
 
     return builder.as_markup()
 

@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from telegram_bot.states import CreateTaskStates
 from telegram_bot.models.task import TaskTemplate
 from telegram_bot.keyboards.create_task import task_templates_keyboard
-from telegram_bot.flows.create_task import show_selected, show_templates_selection, show_groups_selection
+from telegram_bot.flows.create_task import show_selected, show_templates_selection, show_address_selection, show_groups_selection
 
 
 router = Router(name="task_template")
@@ -19,7 +19,7 @@ async def template_page_handler(callback: CallbackQuery, task_service):
         await callback.answer("Ошибка", show_alert=True)
         return
 
-    task_templates: list[TaskTemplate] = task_service.get_all_templates()
+    task_templates: list[TaskTemplate] = task_service.get_all_task_templates()
 
     await callback.message.edit_reply_markup(
         reply_markup=task_templates_keyboard(task_templates=task_templates, page=page)
@@ -52,7 +52,7 @@ async def template_select_handler(callback: CallbackQuery, state: FSMContext, ta
         await callback.answer("Ошибка при выборе шаблона", show_alert=True)
         return
 
-    task_templates: list[TaskTemplate] = task_service.get_all_templates()
+    task_templates: list[TaskTemplate] = task_service.get_all_task_templates()
 
     if index < 0 or index >= len(task_templates):
         await callback.answer("Шаблон не найден", show_alert=True)
@@ -77,6 +77,16 @@ async def template_back_handler(callback: CallbackQuery, state: FSMContext, task
     await callback.answer()
 
 
+# раскомментировать колбек адресов
+# @router.callback_query(F.data == "task_template:continue")
+# async def template_continue_handler(callback: CallbackQuery, state: FSMContext, task_service):
+#     """Перейти на этап выбора группы"""
+#
+#     await show_address_selection(callback, state, task_service)
+#     await callback.answer()
+
+
+# удалить этот кусок
 @router.callback_query(F.data == "task_template:continue")
 async def template_continue_handler(callback: CallbackQuery, state: FSMContext, group_service):
     """Перейти на этап выбора группы"""
