@@ -59,7 +59,8 @@ class TaskService:
         performer_name: str,
         priority: str,
         task_type: TaskType,
-        created_at: datetime
+        created_at: datetime,
+        every_n_days: int or None = None
     ) -> Task:
         """
         Создать и добавить задачу в cache
@@ -84,7 +85,8 @@ class TaskService:
 
             status=TaskStatus.CREATED,
             task_type=task_type,
-            created_at=created_at
+            created_at=created_at,
+            every_n_days=every_n_days
         )
 
         self.task_cache[task_id] = task

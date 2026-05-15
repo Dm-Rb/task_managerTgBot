@@ -1,7 +1,8 @@
 """Подключаем все модули пакета в единый роутер"""
 from aiogram import Router
 
-from telegram_bot.handlers import start_auth, logout, group_events, create_task, show_tasks, menu, media_handler, comment_comple_handler
+from telegram_bot.handlers import start_auth, logout, group_events, create_task, show_tasks, menu, media_handler, \
+    comment_comple_handler, set_task_rucerrence
 
 
 router = Router()
@@ -15,3 +16,4 @@ router.include_router(show_tasks.router)
 router.include_router(menu.router)
 router.include_router(media_handler.router)
 router.include_router(comment_comple_handler.router)
+router.include_router(set_task_rucerrence.router)

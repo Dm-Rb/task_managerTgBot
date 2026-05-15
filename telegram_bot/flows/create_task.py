@@ -103,21 +103,32 @@ async def show_task_type_selection(callback: CallbackQuery, state: FSMContext):
     )
     await state.set_state(CreateTaskStates.choosing_task_type)
 
-async def show_task_confirmation(
-    callback: CallbackQuery,
-    state: FSMContext
-):
+
+async def show_task_confirmation(message_or_callback, state: FSMContext):
     """Показывает финальное подтверждение создания задачи"""
 
     text = await get_task_creation_message_by_state_data(state)
 
-    await callback.message.edit_text(
-        text=text,
-        reply_markup=keyboards.confirm_create_new_task(),
-        parse_mode="HTML"
-    )
+    # await callback.message.edit_text(
+    #     text=text,
+    #     reply_markup=keyboards.confirm_create_new_task(),
+    #     parse_mode="HTML"
+    # )
+    if isinstance(message_or_callback, Message):  # отправили  /create_task
+        await message_or_callback.answer(
+            text,
+            reply_markup=keyboards.confirm_create_new_task(),
+            parse_mode="HTML"
+        )
+    else:  # нажатие на инлайн кнопку
+        await message_or_callback.message.edit_text(
+            text,
+            reply_markup=keyboards.confirm_create_new_task(),
+            parse_mode="HTML"
+        )
 
     await state.set_state(CreateTaskStates.waiting_confirmation)
+
 
 async def show_selected(callback: CallbackQuery, state: FSMContext, callback_data_prefix: str):
     """Показывает сообщение с выбранной информацией + клавиатуру Продолжить/Назад"""
@@ -128,3 +139,14 @@ async def show_selected(callback: CallbackQuery, state: FSMContext, callback_dat
         reply_markup=keyboards.confirm_or_back_keyboard(callback_data_prefix),  # префикс для коллбеков
         parse_mode="HTML"
     )
+
+async def show_task_recurring_selection(callback: CallbackQuery, state: FSMContext):
+    """Показать выбор повторения задачи """
+    text = "<b>📆 Выберите интервал повторения:</b>"
+
+    await callback.message.edit_text(
+        text=text,
+        reply_markup=keyboards.task_type_recurrence_keyboard(),
+        parse_mode="HTML"
+    )
+    await state.set_state(CreateTaskStates.choosing_task_type)

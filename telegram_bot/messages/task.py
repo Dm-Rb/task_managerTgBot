@@ -51,6 +51,8 @@ async def get_task_creation_message_by_state_data(state: FSMContext) -> str:
 
         type_text = f"{type_emoji} {task_type}" if type_emoji else task_type
         lines.append(f"<b>Тип задачи:</b> <i>{type_text}</i>")
+    if task_type := data.get("every_n_days"):
+        lines.append(f"<b>Повторяется раз в:</b> <i>{str(task_type)} дней</i>")
 
     return "\n".join(lines)
 
@@ -120,6 +122,27 @@ def get_task_message_by_task_obj(task: Task) -> str:
             reaction_time = 'Мгновенно'
         lines.append(
             f"<b>Время реагирования:</b> <i>⏱ {reaction_time}</i>"
+        )
+
+    # === Время выполнения ===
+    if (
+            hasattr(task, 'accepted_at') and task.accepted_at and
+            hasattr(task, 'completed_at') and task.completed_at
+    ):
+        delta = task.completed_at - task.accepted_at
+
+        total_seconds = int(delta.total_seconds())
+
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+
+        execution_time = f"{hours:02}:{minutes:02}"
+
+        if execution_time == '00:00':
+            execution_time = 'Мгновенно'
+
+        lines.append(
+            f"<b>Время выполнения:</b> <i>⏱ {execution_time}</i>"
         )
 
     # === Группа ===

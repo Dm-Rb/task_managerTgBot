@@ -9,6 +9,7 @@ class TaskStatus(Enum):
     IN_PROGRESS = "В процессе"
     COMPLETED = "Выполнено"
     CANCELLED = "Отменена"
+    # CONFIG = "Конфигурация задачи по-расписанию"
 
     def __str__(self):
         return self.value
@@ -26,8 +27,8 @@ class TaskType(Enum):
 class RecurrenceInterval(Enum):
     DAILY = "daily"
     EVERY_N_DAYS = "every_n_days"
-    WEEKLY = "weekly"
-    MONTHLY = "monthly"
+    # WEEKLY = "weekly"
+    # MONTHLY = "monthly"
 
 
 class TaskPriority(Enum):
@@ -68,10 +69,7 @@ class Task:
     completed_at: Optional[datetime] = None
 
     # Для циклических задач
-    recurrence_interval: Optional[RecurrenceInterval] = None
-    every_n: Optional[int] = None
-    next_execution_at: Optional[datetime] = None
-    parent_task_id: Optional[int] = None
+    every_n_days: Optional[int] = None
 
     is_active: bool = True
 

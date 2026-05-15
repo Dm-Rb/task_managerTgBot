@@ -147,6 +147,23 @@ def task_type_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
+def task_type_recurrence_keyboard() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text=f"Каждый день",
+        callback_data="recurrence_task:repeat:1"
+    )
+    builder.button(
+        text=f"Задать интервал дней",
+        callback_data="recurrence_task:repeat:set"
+    )
+
+    builder.adjust(1)
+
+    return builder.as_markup()
+
+
 def confirm_or_back_keyboard(callback_data_prefix: str) -> InlineKeyboardMarkup:
     """Дополнительная клавиатура для подтверждения выбора\возвращения на предыдущий шаг"""
 

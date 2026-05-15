@@ -86,6 +86,7 @@ class TaskRuntimeService:
             performer_name: str,
             priority: str,
             task_type: TaskType,
+            every_n_days=None,
             is_active=True
     ) -> Task or None:
         """
@@ -104,7 +105,8 @@ class TaskRuntimeService:
             performer_name=performer_name,
             priority=priority,
             task_type=task_type,
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc),
+            every_n_days=every_n_days
                     )
         if is_active:
             task_text = messages_build.get_notification_task_message('new', task)
