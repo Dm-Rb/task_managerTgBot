@@ -62,9 +62,10 @@ def get_notification_task_message(type_: str, task: Task) -> str or None:
     elif type_ == "process":
         text = "🆙 <b>Сотрудник приступил к выполнению задачи</b>\n\n"
     elif type_ == "completed":
-        text = "✅ <b>Сотрудник выполнил задачу</b>\n\n"
+        text = "🏆 <b>Задача выполнена</b>\n\n"
     elif type_ == "cancelled":
         text = "❌ <b>Задача была отменена создателем</b>\n\n"
+
     else:
         return
     return text + get_task_message_by_task_obj(task)

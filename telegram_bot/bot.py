@@ -1,5 +1,4 @@
 from core.config import settings
-import asyncio
 from telegram_bot.storage.user_cache import UserCache
 from telegram_bot.storage.group_cache import GroupCache
 from telegram_bot.storage.task_cache import TaskCache
@@ -10,21 +9,19 @@ from telegram_bot.services.task_service import TaskService
 from telegram_bot.services.notification_service import NotificationService
 from telegram_bot.services.task_runtime_service import TaskRuntimeService
 
-
-
-from telegram_bot.handlers import start_auth, logout, group_events, create_task, show_tasks, menu
+from telegram_bot.handlers.router import router as handlers_router
 from telegram_bot.middlewares.ban_middleware import BanMiddleware
 from telegram_bot.callbacks.create_task.router import router as callbacks_create_task
 from telegram_bot.callbacks.update_task.router import router as callbacks_update_task
 
 
-
-from aiogram.types import BotCommand
+import asyncio
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
 from database.init_db import init_db
 from database.repositories.user import UserRepository
 from database.repositories.group import GroupRepository
+from database.repositories.task import TaskRepository
 
 
 from aiogram.types import BotCommand
@@ -47,7 +44,7 @@ async def start_bot():
     # объекты для crud операций с базой данных
     user_database = UserRepository()
     group_database = GroupRepository()
-
+    task_database = TaskRepository()
     # объекты для операций с самописным кешем
     user_cache = UserCache()
     group_cache = GroupCache()
@@ -71,15 +68,7 @@ async def start_bot():
     await user_service.warm_up()
     await group_service.warm_up()
 
-    # регистрируем роутеры в диспетчере
-    dp.include_router(start_auth.router)
-    dp.include_router(logout.router)
-    dp.include_router(create_task.router)  # /handlers/create_task
-    dp.include_router(show_tasks.router)  # /handlers/show_tasks
-    dp.include_router(menu.router)  # /handlers/menu
-
-
-    dp.include_router(group_events.router)
+    dp.include_router(handlers_router)
     dp.include_router(callbacks_create_task)
     dp.include_router(callbacks_update_task)
 

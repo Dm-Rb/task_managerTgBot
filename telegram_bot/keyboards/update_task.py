@@ -10,7 +10,7 @@ def performer_task_keyboard(task_id: str, status: TaskStatus) -> InlineKeyboardM
     if status == TaskStatus.CREATED:
 
         builder.button(
-            text="✅ Взять задачу",
+            text="☑️ Взять задачу",
             callback_data=f"task:accept:{task_id}"
         )
 

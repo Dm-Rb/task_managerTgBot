@@ -15,7 +15,7 @@ async def create_new_task_handker(callback: CallbackQuery, state: FSMContext, ru
     # передаём данные в кеш task_service
     task = await runtime_service.register_new_task(
         title=state_data['template_title'],
-        description=state_data['template_title'],
+        description=state_data['template_description'],
         group_id=state_data['group_id'],
         group_title=state_data['group_title'],
         creator_id=callback.from_user.id,

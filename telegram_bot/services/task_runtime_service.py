@@ -170,4 +170,49 @@ class TaskRuntimeService:
             await self.notifications.send_to_group(group_id=task.group_id, text=task_text)
         return task
 
+    async def complete_task(self, task_id: str, comment: str, media) -> Task or None:
+        task: Task = self.task_service.get_task(task_id)
+
+        if not task:
+            return None
+
+        # Обновляем объект задачи
+        task.status = TaskStatus.COMPLETED
+        task.completed_at = datetime.now(timezone.utc)
+        task.is_active = False
+
+        # удаляем задачу из кеша (объект задачи мы вернём)
+        self.task_service.remove_task(task_id)
+
+        # =====================================
+        # Уведомления
+        # =====================================
+        task_text = messages_build.get_notification_task_message('completed', task)
+        task_text += f"\n\n<b>Кoмментарий исполнителя:</b> <i>{comment}</i>"
+
+        if len(media) == 1:
+            media_item = media[0]
+        # media_item = media[0]
+            if media_item["type"] == "photo":
+                # Отправляем мессагу создателю (без кнопки)
+                await self.notifications.send_photo_to_user(task.creator_id, media_item["file_id"], task_text)
+                # Отправляем мессагу исполнителю (без кнопки)
+                await self.notifications.send_photo_to_user(task.performer_id, media_item["file_id"], task_text)
+                # Отправляем мессагу в группу (без кнопки)
+                await self.notifications.send_photo_to_group(task.group_id, media_item["file_id"], task_text)
+            elif media_item["type"] == "video":
+                # Отправляем мессагу создателю (без кнопки)
+                await self.notifications.send_video_to_user(task.creator_id, media_item["file_id"], task_text)
+                # Отправляем мессагу исполнителю
+                await self.notifications.send_video_to_user(task.performer_id, media_item["file_id"], task_text)
+                # Отправляем мессагу в группу (без кнопки)
+                await self.notifications.send_video_to_group(task.group_id, media_item["file_id"], task_text)
+        else:
+            await self.notifications.send_media_group_to_user(user_id=task.creator_id, media=media, text=task_text)
+            await self.notifications.send_media_group_to_user(user_id=task.performer_id, media=media, text=task_text)
+            await self.notifications.send_media_group_to_group(group_id=task.group_id, media=media, text=task_text)
+        # await self.notifications.send_to_group(group_id=task.group_id, text=task_text)
+        return task
+
+
 

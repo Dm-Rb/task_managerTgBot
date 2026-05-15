@@ -11,3 +11,9 @@ class CreateTaskStates(StatesGroup):  # FSM для логического бок
     choosing_task_type = State()  # типа задачи (разовая\цикличная)
     choosing_repeat = State()
     waiting_confirmation = State()
+
+
+class CompleteTaskStates(StatesGroup):  # FSM для логического бока completing_task
+
+    waiting_media = State()
+    waiting_comment = State()
