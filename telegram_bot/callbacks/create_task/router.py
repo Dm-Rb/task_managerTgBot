@@ -2,7 +2,6 @@
 from aiogram import Router
 from telegram_bot.callbacks.create_task.task_template import router as task_template_router
 from telegram_bot.callbacks.create_task.address import router as address_router
-
 from telegram_bot.callbacks.create_task.groups import router as group_router
 from telegram_bot.callbacks.create_task.performer import router as performer_router
 from telegram_bot.callbacks.create_task.priority import router as priority_router
@@ -16,7 +15,6 @@ router = Router(name="callbacks_create_task")
 
 router.include_router(task_template_router)
 router.include_router(address_router)
-
 router.include_router(group_router)
 router.include_router(performer_router)
 router.include_router(priority_router)

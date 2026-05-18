@@ -5,7 +5,7 @@ from telegram_bot.storage.group_cache import GroupCache
 
 class GroupService:
 
-    def __init__(self, cache, database):
+    def __init__(self, cache: GroupCache, database):
         self.cache = cache
         self.database = database
 

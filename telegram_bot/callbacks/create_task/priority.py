@@ -4,7 +4,8 @@ from aiogram.fsm.context import FSMContext
 from telegram_bot.flows.create_task import show_selected, show_priority_selection, show_task_type_selection
 from telegram_bot.models.task import TaskPriority
 
-router = Router(name="priority")
+
+router = Router()
 
 
 @router.callback_query(F.data.startswith("priority:select:"))

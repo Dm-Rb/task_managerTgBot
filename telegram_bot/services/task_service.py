@@ -28,6 +28,20 @@ class TaskService:
     def get_task_template(self, index) -> TaskTemplate or None:
         return self.task_templates_cache[index]
 
+
+    def remove_task_template(self, title: str, description: str) -> bool:
+        """
+        Удаляет шаблон адреса по значению address
+        """
+
+        for template in self.task_templates_cache:
+
+            if template.title == title and template.description == description:
+                self.task_templates_cache.remove(template)
+                return True
+
+        return False
+
     # адреса
 
     def add_address_template(self, address: str):
@@ -39,6 +53,19 @@ class TaskService:
     def get_all_address_templates(self):
 
         return self.address_templates_cache
+
+    def remove_address_template(self, address: str) -> bool:
+        """
+        Удаляет шаблон адреса по значению address
+        """
+
+        for template in self.address_templates_cache:
+
+            if template.address == address:
+                self.address_templates_cache.remove(template)
+                return True
+
+        return False
 
     ######################
 

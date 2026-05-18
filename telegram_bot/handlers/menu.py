@@ -1,26 +1,23 @@
-from aiogram import Router, F
-from aiogram.filters import Command
+
 
 from telegram_bot.keyboards.menu import main_menu_keyboard
-from aiogram.types import Message
-from aiogram.fsm.context import FSMContext
+
 from telegram_bot.states import CreateTaskStates  # FSM
 
 from telegram_bot.flows.create_task import show_templates_selection
 from aiogram import Router, F
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from telegram_bot.keyboards.logout import logout_keyboard
 
 
-
 router = Router()
 
 
 @router.message(Command("menu"))
-async def show_tasks_handler(message: Message, user_service):
+async def show_tasks_handler(message: Message, user_service, state: FSMContext):
     user = user_service.cache.get(message.from_user.id)
     if not user:
         return
@@ -29,6 +26,8 @@ async def show_tasks_handler(message: Message, user_service):
 
     user = user_service.cache.get(message.from_user.id)
     await message.answer(text='Выберите пункт меню из списка:', reply_markup=main_menu_keyboard(user.role))
+
+    await state.clear()
 
 @router.message(F.text == "📋 Мои задачи")
 async def show_tasks_button(message: Message, runtime_service, user_service):
@@ -66,6 +65,7 @@ async def show_tasks_button(message: Message, state: FSMContext, task_service ,
 
 class LogoutStates(StatesGroup):
     waiting_confirm = State()
+
 @router.message(F.text == "🚪 Разлогиниться")
 @router.message(Command("logout"))
 async def logout_start(message: Message, user_service, state: FSMContext):

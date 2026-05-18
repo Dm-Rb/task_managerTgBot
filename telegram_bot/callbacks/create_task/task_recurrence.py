@@ -2,7 +2,6 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from telegram_bot.flows.create_task import show_task_confirmation
-from telegram_bot.models.task import TaskType
 from telegram_bot.states import CreateTaskStates
 
 

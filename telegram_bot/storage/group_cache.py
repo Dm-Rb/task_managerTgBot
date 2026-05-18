@@ -61,7 +61,7 @@ class GroupCache:
         - если группы нет → add
         - если есть → update
         """
-        if group.tg_id in self._groups:
+        if group.tg_id in self._groups.keys():
             return self.update(group)
 
         return self.add(group)

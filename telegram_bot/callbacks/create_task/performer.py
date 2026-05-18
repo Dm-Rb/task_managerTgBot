@@ -6,7 +6,7 @@ from telegram_bot.flows import create_task as flows
 from telegram_bot.services.user_service import UserService
 
 
-router = Router(name="performer")
+router = Router()
 
 
 @router.callback_query(F.data.startswith("performer:page:"))

@@ -8,12 +8,12 @@ from telegram_bot.services.user_service import UserService
 from telegram_bot.services.group_service import GroupService
 
 from telegram_bot.services.task_service import TaskService
+from telegram_bot.storage.task_cache import AddressTemplate
 
 
 async def show_templates_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
                                    task_service: TaskService, additional_text=""):
     """Показывает список шаблонов задач"""
-    # message_or_callback < сюда может прийти или message, или callback
     task_templates = task_service.get_all_task_templates()
 
     text = f"{additional_text}📔 <b>Выберите шаблон задачи или создайте новый</b>"
@@ -38,13 +38,13 @@ async def show_templates_selection(message_or_callback: CallbackQuery or Message
 async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
                                  task_service: TaskService, additional_text=''):
     """Показывает список шаблонов адресов"""
-    addresses_templates = task_service.get_all_address_templates()
+    addresses_templates: list[AddressTemplate] = task_service.get_all_address_templates()
 
     text = f"{additional_text}🏘 <b>Укажите адрес:</b>"
 
     keyboard = keyboards.address_templates_keyboard(addresses_templates)
 
-    if isinstance(message_or_callback, Message):  # отправили  /create_task
+    if isinstance(message_or_callback, Message):
         await message_or_callback.answer(
             text,
             reply_markup=keyboard,
@@ -58,7 +58,6 @@ async def show_address_selection(message_or_callback: CallbackQuery or Message, 
         )
 
     await state.set_state(CreateTaskStates.choosing_address)
-
 
 
 async def show_groups_selection(message_or_callback, state: FSMContext, group_service: GroupService):
@@ -156,13 +155,13 @@ async def show_task_confirmation(message_or_callback, state: FSMContext):
     await state.set_state(CreateTaskStates.waiting_confirmation)
 
 
-async def show_selected(callback: CallbackQuery, state: FSMContext, callback_data_prefix: str):
+async def show_selected(callback: CallbackQuery, state: FSMContext, callback_data_prefix: str, show_delete_button=None):
     """Показывает сообщение с выбранной информацией + клавиатуру Продолжить/Назад"""
     text = await get_task_creation_message_by_state_data(state)  # формируем текст сообщения из state.get_data()
 
     await callback.message.edit_text(
         text=text,
-        reply_markup=keyboards.confirm_or_back_keyboard(callback_data_prefix),  # префикс для коллбеков
+        reply_markup=keyboards.confirm_or_back_keyboard(callback_data_prefix, show_delete_button),  # префикс для коллбеков
         parse_mode="HTML"
     )
 

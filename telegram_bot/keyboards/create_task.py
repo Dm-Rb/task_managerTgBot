@@ -215,7 +215,7 @@ def task_type_recurrence_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def confirm_or_back_keyboard(callback_data_prefix: str) -> InlineKeyboardMarkup:
+def confirm_or_back_keyboard(callback_data_prefix: str, show_delete_button: bool = False) -> InlineKeyboardMarkup:
     """Дополнительная клавиатура для подтверждения выбора\возвращения на предыдущий шаг"""
 
     builder = InlineKeyboardBuilder()
@@ -227,7 +227,18 @@ def confirm_or_back_keyboard(callback_data_prefix: str) -> InlineKeyboardMarkup:
         text="Подтвердить",
         callback_data=f"{callback_data_prefix}:continue"
     )
-    builder.adjust(2)
+
+    if show_delete_button:
+
+        builder.button(
+            text="🗑 Удалить этот шаблон",
+            callback_data=f"{callback_data_prefix}:delete"
+        )
+
+        builder.adjust(2, 1)
+
+    else:
+        builder.adjust(2)
 
     return builder.as_markup()
 

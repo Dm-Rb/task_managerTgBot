@@ -6,7 +6,7 @@ from telegram_bot.flows.create_task import show_selected, show_groups_selection,
     show_no_performers_in_group, show_performer_selection
 
 
-router = Router(name="group")
+router = Router()
 
 
 @router.callback_query(F.data.startswith("group:page:"))

@@ -7,7 +7,7 @@ from telegram_bot.messages.task import get_task_message_by_task_obj
 from telegram_bot.models.task import TaskType
 
 
-router = Router(name="create_new_task")
+router = Router()
 
 
 @router.callback_query(F.data.startswith("new_task:create"))

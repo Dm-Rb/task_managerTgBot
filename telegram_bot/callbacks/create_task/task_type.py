@@ -5,7 +5,8 @@ from telegram_bot.flows.create_task import show_task_confirmation
 from telegram_bot.models.task import TaskType
 from telegram_bot.flows.create_task import show_selected, show_task_type_selection, show_task_recurring_selection
 
-router = Router(name="task_type")
+
+router = Router()
 
 
 @router.callback_query(F.data.startswith("task_type:once"))
@@ -14,6 +15,7 @@ async def task_type_select_once_handler(callback: CallbackQuery, state: FSMConte
     await show_task_confirmation(callback, state)
 
     return await callback.answer()
+
 
 @router.callback_query(F.data.startswith("task_type:recurring"))
 async def task_type_select_once_handler(callback: CallbackQuery, state: FSMContext):

@@ -3,11 +3,12 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from telegram_bot.states import CreateTaskStates
 from telegram_bot.models.task import TaskTemplate
+from telegram_bot.services.task_service import TaskService
 from telegram_bot.keyboards.create_task import task_templates_keyboard
-from telegram_bot.flows.create_task import show_selected, show_templates_selection, show_address_selection, show_groups_selection
+from telegram_bot.flows.create_task import show_selected, show_templates_selection, show_address_selection
 
 
-router = Router(name="task_template")
+router = Router()
 
 
 @router.callback_query(F.data.startswith("task_template:page:"))
@@ -65,7 +66,7 @@ async def template_select_handler(callback: CallbackQuery, state: FSMContext, ta
         template_title=task_template.title,
         template_description=task_template.description,
     )
-    await show_selected(callback, state, 'task_template')  # делегируем отображение в flow
+    await show_selected(callback, state, 'task_template', True if len(task_templates) > 0 else None)  # делегируем отображение в flow
     await callback.answer()
 
 
@@ -73,6 +74,15 @@ async def template_select_handler(callback: CallbackQuery, state: FSMContext, ta
 async def template_back_handler(callback: CallbackQuery, state: FSMContext, task_service):
     """Вернуться на этап выбора шаблона"""
 
+    await show_templates_selection(callback, state, task_service)
+    await callback.answer()
+
+
+@router.callback_query(F.data == "task_template:delete")
+async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
+    state_data = await state.get_data()
+    if state_data.get('template_title', None) and state_data.get('template_description', None):
+        task_service.remove_task_template(state_data['template_title'], state_data['template_description'])
     await show_templates_selection(callback, state, task_service)
     await callback.answer()
 
