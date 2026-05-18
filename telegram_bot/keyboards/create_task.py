@@ -124,8 +124,9 @@ def groups_keyboard(groups: list[Group], page: int = 0) -> InlineKeyboardMarkup:
 
     # создаём кнопки из объектов Group списка current_groups
     for index, group in enumerate(current_groups, start=start):
+        group_title = group.title or "Без названия"
         builder.button(
-            text=group.title,
+            text=group_title,
             callback_data=f"group:select:{group.tg_id}"
         )
     # добавить кнопки пагинации Назад\Вперёд в эту клавиатуру
