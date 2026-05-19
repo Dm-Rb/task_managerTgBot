@@ -23,6 +23,30 @@ class UserService:
                 )
             self.cache.set(user_)
 
+    def get_all_users(self) -> list[User] or list:
+        try:
+            return self.cache.all().values()
+        except:
+            return []
+
+    def get_performers(self, exclude_tg_id: int) -> list[User] or list:
+
+        result = []
+
+        users = self.cache.all()
+        for user in users.values():
+            if user.tg_id == exclude_tg_id:
+                continue
+
+            # только сотрудники
+            # if user.role == 1:
+            #     user.first_name_ = "👨🏻‍💼 " +  user.first_name
+            # elif user.role == 2:
+            #     user.first_name_ = "🧑🏻‍💻 " +  user.first_name
+            result.append(user)
+        #
+        return result
+
     def get_employee_users(self) -> list[User] or list:
 
         result = []
@@ -95,7 +119,7 @@ class UserService:
 
         return True
 
-    async def is_user_admin(self, tg_id: int) -> bool:
+    def is_user_admin(self, tg_id: int) -> bool:
         user = self.cache.get(tg_id)
         if not user:
             return False

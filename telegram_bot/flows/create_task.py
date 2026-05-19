@@ -94,7 +94,7 @@ async def show_no_performers_in_group(callback: CallbackQuery, state: FSMContext
     groups = group_service.get_all_groups()
 
     keyboard = keyboards.groups_keyboard(groups=groups, page=0)
-    text = f'В группе "<b>{group_title}</b>" нет ни одного участника с ролью "Сотрудник".\n\n' \
+    text = f'‼️ В группе "<b>{group_title}</b>" нет ни одного исполнителя.\n\n' \
            f'Пожалуйста, выберите другую группу:'
 
     await callback.message.edit_text(

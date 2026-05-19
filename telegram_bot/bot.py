@@ -54,7 +54,7 @@ async def start_bot():
     group_service = GroupService(group_cache, group_database)
     task_service = TaskService(task_cache, None)
     notification_service = NotificationService(bot)
-    runtime_service = TaskRuntimeService(task_service, notification_service)
+    runtime_service = TaskRuntimeService(task_service, notification_service, user_service)
 
 
     # регистрируем объекты в диспетчере что бы вызывать объекты прямо в хендлерах не ебаться с импортами

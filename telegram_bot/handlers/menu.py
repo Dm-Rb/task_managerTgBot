@@ -22,7 +22,7 @@ async def show_tasks_handler(message: Message, user_service, state: FSMContext):
     if not user:
         return
     if not user.role in (1, 2): # если роль 0 - не реагировать на команду
-        return await message.answer(text='Для отображения меню необходима авторизация')
+        return await message.answer(text='Для отображения меню необходима авторизация: /start')
 
     user = user_service.cache.get(message.from_user.id)
     await message.answer(text='Выберите пункт меню из списка:', reply_markup=main_menu_keyboard(user.role))
@@ -31,22 +31,13 @@ async def show_tasks_handler(message: Message, user_service, state: FSMContext):
 
 @router.message(F.text == "📋 Мои задачи")
 async def show_tasks_button(message: Message, runtime_service, user_service):
-    user = user_service.cache.get(message.from_user.id)
-    if user.role == 1:  # исполнитель задачи
-        text = "📝 <b>Список ваших активных задач:</b>"
-        await message.answer(text=text, parse_mode='HTML')
-        await runtime_service.send_tasks_to_performer(message.from_user.id)
-    elif user.role == 2:  # создатель задачи
-        text = "📝 <b>Список созданных вами задач:</b>"
-        await message.answer(text=text, parse_mode='HTML')
-        await runtime_service.send_tasks_to_creator(message.from_user.id)
-    else:
-        return
+    text = "📝 <b>Список ваших активных задач:</b>"
+    await message.answer(text=text, parse_mode='HTML')
+    await runtime_service.send_tasks_to_performer(message.from_user.id)
+
 
 @router.message(F.text == "➕ Создать новую задачу")
-async def show_tasks_button(message: Message, state: FSMContext, task_service ,
-                                user_service):
-
+async def show_tasks_button(message: Message, state: FSMContext, task_service, user_service):
     """ Старт создания задачи """
     user = user_service.cache.get(message.from_user.id)
     if not user:
@@ -55,13 +46,24 @@ async def show_tasks_button(message: Message, state: FSMContext, task_service ,
         return
     # очищаем состояние
     await state.clear()
-    is_user_admin = await user_service.is_user_admin(message.from_user.id)
+    is_user_admin = user_service.is_user_admin(message.from_user.id)
     if not is_user_admin:
         return await message.answer('У вас не достаточно прав для создания задач')
 
     # Делегируем отображение в flow
     await show_templates_selection(message, state, task_service)
     await state.set_state(CreateTaskStates.choosing_template)
+
+@router.message(F.text == "🗓 Список всех активных задач")
+async def show_all_tasks_button(message: Message, runtime_service, user_service):
+    user = user_service.cache.get(message.from_user.id)
+    if user.role != 2:
+        return
+    text = "📝 Список всех активных задач:"
+    await message.answer(text=text, parse_mode='HTML')
+    await runtime_service.get_all_tasks(message.from_user.id)
+    # if user.role == 1:  # исполнитель задачи
+
 
 class LogoutStates(StatesGroup):
     waiting_confirm = State()

@@ -49,16 +49,19 @@ async def performer_select_handler(callback: CallbackQuery, state: FSMContext, u
 
 
 @router.callback_query(F.data == "performer:back")
-async def template_back_handler(callback: CallbackQuery, state: FSMContext, user_service: UserService):
+async def template_back_handler(callback: CallbackQuery, state: FSMContext, user_service: UserService, group_service):
     """Вернуться на этап выбора исполнителя"""
     data = await state.get_data()
-    users_id: list = data['performers_list']
-    users_obj_list = [user_service.cache.get(int(user)) for user in users_id]
+    group_id: int = int(data["group_id"])
 
-    await callback.message.edit_reply_markup(
-        reply_markup=performers_keyboard(performers=users_obj_list, page=0)
-    )
-    await callback.answer()
+    performers = user_service.get_performers(callback.from_user.id)
+    if not performers:  # если нет исполнителей - показать сообщение и вернуться на этап выбора группы
+        return await flows.show_no_performers_in_group(callback, state, group_service, group_id)
+
+    # Сохраняем список user.tg_id для более быстрого получения списка исполнителей в performer_page_handler
+    await state.update_data(performers_list=[p.tg_id for p in performers])  # list[int]
+
+    await flows.show_performer_selection(callback, state, performers)
 
 
 @router.callback_query(F.data == "performer:continue")

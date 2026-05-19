@@ -7,7 +7,7 @@ from core.config import settings
 
 
 router = Router()
-ROLES = {2: "Администратор", 1: "Сотрудник"}
+ROLES = {2: "🧑🏻‍💻 Администратор", 1: "👨🏻‍💼 Сотрудник"}
 
 
 class AuthStates(StatesGroup):

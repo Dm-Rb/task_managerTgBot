@@ -83,9 +83,10 @@ async def group_continue_handler(callback: CallbackQuery, state: FSMContext, gro
     """Перейти на этап выбора исполнителя"""
     data = await state.get_data()
     group_id: int = int(data["group_id"])
-    # получаем исполнителей через сервис (user.role == 1 которые состоят в группе group_id)
-    performers = await user_service.get_performers_in_group(bot=callback.bot, group_id=group_id)
-
+    # #получаем исполнителей через сервис (user.role == 1 которые состоят в группе group_id)
+    # performers = await user_service.get_performers_in_group(bot=callback.bot, group_id=group_id)
+    # Заказчик внёс правки и попросил иметь возможноть ставить задачи юзерам с ролью Администатор в том числе.
+    performers = user_service.get_performers(callback.from_user.id)
     if not performers:  # если нет исполнителей - показать сообщение и вернуться на этап выбора группы
         return await show_no_performers_in_group(callback, state, group_service, group_id)
 

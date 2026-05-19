@@ -17,7 +17,6 @@ class NotificationService:
             return True
 
         except Exception as e:
-            print(f"[NotificationService] send_to_user error: {e}")
             return False
 
     async def send_to_group(self, group_id: int, text: str,

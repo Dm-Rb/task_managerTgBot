@@ -28,6 +28,11 @@ def main_menu_keyboard(
                 text="➕ Создать новую задачу"
             )
         ])
+        keyboard.append([
+            KeyboardButton(
+                text="🗓 Список всех активных задач"
+            )
+        ])
 
     # ==========================================
     # Общие кнопки
@@ -38,7 +43,6 @@ def main_menu_keyboard(
             text="📋 Мои задачи"
         )
     ])
-
     keyboard.append([
         KeyboardButton(
             text="🚪 Разлогиниться"

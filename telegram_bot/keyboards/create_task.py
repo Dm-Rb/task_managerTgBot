@@ -198,10 +198,11 @@ def performers_keyboard(performers: list[User], page: int = 0) -> InlineKeyboard
     end = start + PAGE_SIZE
 
     current_performers = performers[start:end]
+    ROLES = {2: "🧑🏻‍💻", 1: "👨🏻‍💼"}
 
     for performer in current_performers:
         builder.button(
-            text=performer.full_name(),
+            text=f"{ROLES[performer.role]} {performer.full_name()}",
             callback_data=f"performer:select:{performer.tg_id}"
         )
 
