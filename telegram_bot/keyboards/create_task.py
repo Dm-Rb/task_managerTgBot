@@ -34,7 +34,7 @@ def task_templates_keyboard(task_templates: list[TaskTemplate], page: int = 0) -
     builder = InlineKeyboardBuilder()
 
     # отдельная кнопка создания шаблона
-    builder.button(text="➕ Создать новый шаблон", callback_data="task_template:create")
+    builder.button(text="➕ Создать шаблон задачи", callback_data="task_template:create")
 
     # фрагментируем список для пагинации
     start = page * PAGE_SIZE
@@ -67,7 +67,7 @@ def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) 
     builder = InlineKeyboardBuilder()
     # кнопка добавить шаблон
     builder.button(
-        text="➕ Добавить шаблон",
+        text="➕ Создать шаблон адреса",
         callback_data="address:create"
     )
 
@@ -114,29 +114,76 @@ def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) 
 
 
 def groups_keyboard(groups: list[Group], page: int = 0) -> InlineKeyboardMarkup:
-    """Инлайн-клавиатура для выбора группы"""
+    """
+    Инлайн-клавиатура выбора группы/топика
+    С корректной пагинацией форумов
+    """
+
     builder = InlineKeyboardBuilder()
 
-    # фрагментируем список для пагинации
+    items = []
+
+    for group in groups:
+        group_title = group.title or "Без названия"
+        # обычная группа
+        if not group.is_forum:
+            items.append(
+                (
+                    group_title,
+                    f"group:select:{group.tg_id}"
+                )
+            )
+
+        # форум-группа
+        else:
+            # если топиков нет
+            if not group.topics:
+                items.append(
+                    (
+                        f"{group_title} / Общий чат",
+                        f"group:select:{group.tg_id}"
+                    )
+                )
+            # топики
+            else:
+                for topic in group.topics:
+                    items.append(
+                        (
+                            f"{group_title} / {topic.title}",
+                            (
+                                f"group:select:"
+                                f"{group.tg_id}:"
+                                f"{topic.topic_id}"
+                            )
+                        )
+                    )
+
+    # пагинация
     start = page * PAGE_SIZE
     end = start + PAGE_SIZE
-    current_groups = groups[start:end]  # срез
 
-    # создаём кнопки из объектов Group списка current_groups
-    for index, group in enumerate(current_groups, start=start):
-        group_title = group.title or "Без названия"
+    current_items = items[start:end]
+    # кнопки с группами
+    for text, callback_data in current_items:
+
         builder.button(
-            text=group_title,
-            callback_data=f"group:select:{group.tg_id}"
+            text=text,
+            callback_data=callback_data
         )
-    # добавить кнопки пагинации Назад\Вперёд в эту клавиатуру
-    pagination_buttons = _add_pagination_buttons(page, end, groups, builder, 'group')
 
-    rows = [1] * len(current_groups)
+    # кнопки пагинации
+    pagination_buttons = _add_pagination_buttons(
+        page=page,
+        end=end,
+        arrow=items,
+        builder=builder,
+        callback_data_prefix="group"
+    )
 
+    # позиционирование кнопок
+    rows = [1] * len(current_items)
     if pagination_buttons:
-        rows.append(len(pagination_buttons))  # кнопки пагинации в одной строке
-
+        rows.append(len(pagination_buttons))
     builder.adjust(*rows)
 
     return builder.as_markup()
@@ -216,7 +263,7 @@ def task_type_recurrence_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def confirm_or_back_keyboard(callback_data_prefix: str, show_delete_button: bool = False) -> InlineKeyboardMarkup:
+def confirm_or_back_keyboard(callback_data_prefix: str, show_delete_button: str or None = None) -> InlineKeyboardMarkup:
     """Дополнительная клавиатура для подтверждения выбора\возвращения на предыдущий шаг"""
 
     builder = InlineKeyboardBuilder()
@@ -232,7 +279,7 @@ def confirm_or_back_keyboard(callback_data_prefix: str, show_delete_button: bool
     if show_delete_button:
 
         builder.button(
-            text="🗑 Удалить этот шаблон",
+            text=show_delete_button,
             callback_data=f"{callback_data_prefix}:delete"
         )
 

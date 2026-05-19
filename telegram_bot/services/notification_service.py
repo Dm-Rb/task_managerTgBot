@@ -21,7 +21,7 @@ class NotificationService:
             return False
 
     async def send_to_group(self, group_id: int, text: str,
-                            reply_markup: InlineKeyboardMarkup = None, parse_mode: str = "HTML") -> bool:
+                            reply_markup: InlineKeyboardMarkup = None, parse_mode: str = "HTML", thread_id: int or None = None) -> bool:
         """
         Отправить сообщение в группу
         """
@@ -31,7 +31,9 @@ class NotificationService:
                 chat_id=group_id,
                 text=text,
                 reply_markup=reply_markup,
-                parse_mode=parse_mode
+                parse_mode=parse_mode,
+                message_thread_id=thread_id
+
             )
 
             return True

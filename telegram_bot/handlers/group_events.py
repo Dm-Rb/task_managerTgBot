@@ -31,10 +31,6 @@ async def bot_status_in_group_updated(event: ChatMemberUpdated, group_service):
         )
 
         await group_service.add_group(group)
-        groups = await group_service.get_all_groups()
-
-        for group in groups:
-            print(group.tg_id, group.title, group.is_admin)
 
     # 2. Изменили права администратора
     elif old_status == "member" and new_status in ("administrator", "creator"):
@@ -56,4 +52,4 @@ async def bot_status_in_group_updated(event: ChatMemberUpdated, group_service):
 
     # 3. Бота кикнули или удалили
     elif new_status in ("left", "kicked") and old_status not in ("left", "kicked"):
-        print("Добавить обработчик удаления информайции ")
+        await group_service.remove_group(tg_id=chat.id)

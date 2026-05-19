@@ -30,38 +30,43 @@ class GroupCache:
         """
         return list(self._groups.values())
 
+    # =====================================================
+    # CRUD
+    # =====================================================
+
     def add(self, group: Group) -> Group:
         """
-        Добавить новую группу в кеш
-        (если уже существует — просто перезаписывает)
+        Добавить новую группу
         """
         self._groups[group.tg_id] = group
+
         return group
 
     def update(self, group: Group) -> Group:
         """
         Обновить существующую группу
-        (если нет — создаёт новую запись)
         """
+
         existing = self._groups.get(group.tg_id)
 
+        # если группы нет — создаём
         if not existing:
             self._groups[group.tg_id] = group
             return group
 
-        # обновляем только поля
         existing.title = group.title
         existing.is_admin = group.is_admin
+        existing.is_forum = group.is_forum
+        existing.topics = group.topics
 
         return existing
 
     def upsert(self, group: Group) -> Group:
         """
-        Универсальный метод:
-        - если группы нет → add
-        - если есть → update
+        Добавить или обновить группу
         """
-        if group.tg_id in self._groups.keys():
+
+        if self.exists(group.tg_id):
             return self.update(group)
 
         return self.add(group)

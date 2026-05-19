@@ -63,7 +63,7 @@ async def address_select_handler(callback: CallbackQuery, state: FSMContext, tas
     template: AddressTemplate = templates[index]
     await state.update_data(address=template.address)
 
-    await show_selected(callback, state, "address", True if len(templates) > 0 else None)
+    await show_selected(callback, state, "address", "🗑 Удалить этот шаблон адреса" if len(templates) > 0 else None)
     await callback.answer()
 
 

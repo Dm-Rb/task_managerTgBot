@@ -2,7 +2,7 @@
 from aiogram import Router
 
 from telegram_bot.handlers import start_auth, logout, group_events, create_task, show_tasks, menu, media_handler, \
-    comment_comple_handler, set_task_rucerrence, address_template
+    comment_comple_handler, address_template, group_topic
 
 
 router = Router()
@@ -16,5 +16,5 @@ router.include_router(show_tasks.router)
 router.include_router(menu.router)
 router.include_router(media_handler.router)
 router.include_router(comment_comple_handler.router)
-router.include_router(set_task_rucerrence.router)
 router.include_router(address_template.router)
+router.include_router(group_topic.router)

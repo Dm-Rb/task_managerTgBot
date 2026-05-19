@@ -44,7 +44,8 @@ class Task:
     title: str
     description: str
     group_id: int
-    group_title: str
+    topic_id: int or None
+    group_title: str  # если есть топик в группе > group.title + ' / ' + topic.title
     creator_id: int
     creator_name: str
     performer_id: int

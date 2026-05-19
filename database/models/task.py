@@ -47,6 +47,13 @@ class TaskTable(Base):
         nullable=False,
         index=True
     )
+    # топик группы
+    topic_id: Mapped[int] = mapped_column(
+        Integer,
+        nullable=True,
+        index=True
+    )
+
 
     group_title: Mapped[str] = mapped_column(
         String(255),

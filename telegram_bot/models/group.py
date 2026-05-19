@@ -1,20 +1,22 @@
 from dataclasses import dataclass, field
+from typing import Optional
+
+
+@dataclass
+class GroupTopic:
+    topic_id: int
+    title: str
 
 
 @dataclass
 class Group:
     tg_id: int
     title: str
-    is_admin: bool
-    # members: list[int] = field(default_factory=list)
 
-    # "г.Минск, ул.Мележа 1 (ТЦ Парус)"
-    # "М. Институт культуры, цветы"
-    #
-    # "РЕМОНТ МОНЕТНИКА"
-    # "Засор монетника"
-    #
-    # "Встретить посылку"
-    # "В 18:30 приедет водитель"
+    is_admin: bool = False
 
+    # support forum groups
+    is_forum: bool = False
 
+    # список топиков
+    topics: list[GroupTopic] = field(default_factory=list)

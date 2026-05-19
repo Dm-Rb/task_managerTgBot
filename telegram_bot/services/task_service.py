@@ -28,7 +28,6 @@ class TaskService:
     def get_task_template(self, index) -> TaskTemplate or None:
         return self.task_templates_cache[index]
 
-
     def remove_task_template(self, title: str, description: str) -> bool:
         """
         Удаляет шаблон адреса по значению address
@@ -101,7 +100,8 @@ class TaskService:
         task_type: TaskType,
         created_at: datetime,
         every_n_days: int or None = None,
-        address: str or None = None
+        address: str or None = None,
+        topic_id: int or None = None
     ) -> Task:
         """
         Создать и добавить задачу в cache
@@ -113,6 +113,7 @@ class TaskService:
             description=description,
             address=address,
             group_id=group_id,
+            topic_id=topic_id,
             group_title=group_title,
             creator_id=creator_id,
             creator_name=creator_name,

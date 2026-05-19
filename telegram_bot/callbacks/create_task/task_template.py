@@ -66,7 +66,7 @@ async def template_select_handler(callback: CallbackQuery, state: FSMContext, ta
         template_title=task_template.title,
         template_description=task_template.description,
     )
-    await show_selected(callback, state, 'task_template', True if len(task_templates) > 0 else None)  # делегируем отображение в flow
+    await show_selected(callback, state, 'task_template', "🗑 Удалить этот шаблон задачи" if len(task_templates) > 0 else None)  # делегируем отображение в flow
     await callback.answer()
 
 

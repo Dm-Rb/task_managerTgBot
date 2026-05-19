@@ -18,6 +18,7 @@ async def create_new_task_handker(callback: CallbackQuery, state: FSMContext, ru
         title=state_data['template_title'],
         description=state_data['template_description'],
         group_id=state_data['group_id'],
+        topic_id=state_data['topic_id'],
         group_title=state_data['group_title'],
         creator_id=callback.from_user.id,
         creator_name=callback.from_user.full_name,
