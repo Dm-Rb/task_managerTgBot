@@ -23,10 +23,13 @@ class TaskType(Enum):
     def get_by_index(cls, index: int):
         return list(cls)[index].value
 
+
 class TaskPriority(Enum):
-    NORMAL = "Обычный"
-    HIGH = "Высокий"
-    URGENT = "Срочный"
+    FAST = "Мгновенный 1,15 часа"
+    HIGH = "Высокий 3 часа"
+    NORMAL = "Обычный 8 часов"
+    DAY = "В течении суток"
+    THREE_DAYS = "В ближайшие 3 дня"
 
     @classmethod
     def get_all(cls):
