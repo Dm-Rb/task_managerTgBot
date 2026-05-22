@@ -1,8 +1,9 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from telegram_bot.flows.create_task import show_selected, show_priority_selection, show_task_type_selection
-from telegram_bot.models.task import TaskPriority
+from telegram_bot.flows.create_task import show_selected, show_priority_selection, \
+    show_task_type_selection, show_task_confirmation
+from telegram_bot.models.task import TaskPriority, TaskType
 
 
 router = Router()
@@ -29,8 +30,17 @@ async def priority_select_handler(callback: CallbackQuery, state: FSMContext):
 async def priority_continue_handler(callback: CallbackQuery, state: FSMContext, ):
     """Переход на этап выбора типа задачи"""
 
-    await show_task_type_selection(callback, state)
-    await callback.answer()
+    """
+    Тут переработка. необходимо пропустить этот пункт при создании обычной задачи указав в типе Разово. И оставить
+    функционал если создаётся конфигурация задачи 
+    """
+    state_data = await state.get_data()
+    if state_data.get('scheduler', None):  # имеем дело с SchedulerTask. Продолжаем цепочку
+        await show_task_type_selection(callback, state)
+        await callback.answer()
+    else:  # имеем дело с Task. Заканчиваем цепочку и переходим к подтверждению
+        await state.update_data(task_type=TaskType.ONCE.value)  # устанавливаем тип: Разово
+        await show_task_confirmation(callback, state) # отображаем клавиатуру подтверждения создания таски
 
 
 @router.callback_query(F.data == "priority:back")

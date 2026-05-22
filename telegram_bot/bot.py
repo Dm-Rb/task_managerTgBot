@@ -8,6 +8,7 @@ from telegram_bot.services.group_service import GroupService
 from telegram_bot.services.task_service import TaskService
 from telegram_bot.services.notification_service import NotificationService
 from telegram_bot.services.task_runtime_service import TaskRuntimeService
+from telegram_bot.services.scheduler_service import SchedulerService
 
 from telegram_bot.handlers.router import router as handlers_router
 from telegram_bot.middlewares.ban_middleware import BanMiddleware
@@ -56,7 +57,10 @@ async def start_bot():
     notification_service = NotificationService(bot)
     runtime_service = TaskRuntimeService(task_service, notification_service, user_service)
 
-
+    scheduler_service = SchedulerService(
+        task_service=task_service,
+        runtime_service=runtime_service
+    )
     # регистрируем объекты в диспетчере что бы вызывать объекты прямо в хендлерах не ебаться с импортами
     dp["user_service"] = user_service
     dp["group_service"] = group_service
@@ -77,6 +81,9 @@ async def start_bot():
     dp.callback_query.middleware(BanMiddleware())
     await set_main_menu(bot)
     try:
+        asyncio.create_task(
+            scheduler_service.start()
+        )
         await dp.start_polling(
             bot,
             # allowed_updates=dp.resolve_used_update_types()

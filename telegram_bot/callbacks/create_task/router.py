@@ -7,7 +7,7 @@ from telegram_bot.callbacks.create_task.performer import router as performer_rou
 from telegram_bot.callbacks.create_task.priority import router as priority_router
 from telegram_bot.callbacks.create_task.task_type import router as task_type_router
 from telegram_bot.callbacks.create_task.new_task import router as new_task_router
-from telegram_bot.callbacks.create_task.task_recurrence import router as task_recurrence_router
+from telegram_bot.callbacks.create_task.create_schedule import router as new_schedule_task_router
 
 
 router = Router(name="callbacks_create_task")
@@ -19,7 +19,8 @@ router.include_router(group_router)
 router.include_router(performer_router)
 router.include_router(priority_router)
 router.include_router(task_type_router)
-router.include_router(task_recurrence_router)
+router.include_router(new_schedule_task_router)
+
 
 
 router.include_router(new_task_router)

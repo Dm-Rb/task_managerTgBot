@@ -65,19 +65,21 @@ def get_notification_task_message(type_: str, task: Task) -> str or None:
     """Обёртка для get_task_message_by_task_obj. Подставляет текст с типом уведомления в начало сообщения"""
     if type_ == "new":
         text = "🆕 <b>Новая задача</b>\n\n"
+    elif type_ == "creator":
+        text = "🆕 <b>Вы создали новую задачу</b>\n\n"
     elif type_ == "process":
         text = "🆙 <b>Сотрудник приступил к выполнению задачи</b>\n\n"
     elif type_ == "completed":
         text = "🏁 <b>Задача выполнена</b>\n\n"
     elif type_ == "cancelled":
-        text = "❌ <b>Задача была отменена создателем</b>\n\n"
+        text = "❌ <b>Задача была отменена</b>\n\n"
 
     else:
         return
     return text + get_task_message_by_task_obj(task)
 
 
-def get_task_message_by_task_obj(task: Task) -> str:
+def get_task_message_by_task_obj(task: Task, user_tg_id=None) -> str:
     """
     Генерирует сообщение с информацией о задаче на основе объекта Task.
     Показывает только те поля, которые не являются None или пустыми.
@@ -153,6 +155,10 @@ def get_task_message_by_task_obj(task: Task) -> str:
     if hasattr(task, 'group_title') and task.group_title:
         lines.append(f"<b>Группа:</b> <i>{task.group_title}</i>")
 
+    if user_tg_id:
+        if hasattr(task, 'creator_id') and task.creator_id:
+            lines.append(f"<b>Поставил(а) задачу:</b> <i>{'Вы' if task.creator_id == user_tg_id else task.creator_name}</i>")
+
     # === Исполнитель ===
     if hasattr(task, 'performer_name') and task.performer_name:
         lines.append(f"<b>Исполнитель:</b> <i>{task.performer_name}</i>")
@@ -187,3 +193,135 @@ def get_task_message_by_task_obj(task: Task) -> str:
         lines.append(f"<b>Описание:</b> <i>{desc}</i>")
 
     return "\n".join(lines)
+
+
+async def get_schedule_task_creation_message_by_state_data(state: FSMContext) -> str:
+    """
+    """
+    data = await state.get_data()
+
+    lines = []
+    # === Тип задачи ===
+    # === Задача (Title) ===
+    if template_title := data.get("template_title"):
+        lines.append(f"<b>Задача:</b> <i>{template_title}</i>")
+
+    # === Описание ===
+    if template_description := data.get("template_description"):
+        desc = template_description
+        if len(desc) > 400:
+            desc = desc[:397] + "..."
+        lines.append(f"<b>Описание:</b> <i>{desc}</i>")
+
+    # === Адрес ===
+    if address := data.get("address"):
+        lines.append(f"<b>Адрес:</b> <i>{address}</i>")
+
+    # === Группа ===
+    if group_title := data.get("group_title"):
+        lines.append(f"<b>Группа:</b> <i>{group_title}</i>")
+
+    # === Исполнитель ===
+    if performer_name := data.get("performer_name"):
+        lines.append(f"<b>Исполнитель:</b> <i>{performer_name}</i>")
+
+    # === Приоритет ===
+    if priority := data.get("priority"):
+        # Добавляем эмодзи здесь, при отображении
+        priority_emoji = {
+            "Обычный": "🟢",
+            "Высокий": "🟡",
+            "Срочный": "🔴"
+        }.get(priority, "")
+
+        priority_text = f"{priority_emoji} {priority}" if priority_emoji else priority
+        lines.append(f"<b>Приоритет:</b> <i>{priority_text}</i>")
+
+    # === Тип задачи ===
+    if task_type := data.get("task_type"):
+        type_emoji = {
+            "Разово": "📌",
+            "По расписанию": "🔄"
+        }.get(task_type, "")
+
+        type_text = f"{type_emoji} {task_type}" if type_emoji else task_type
+        lines.append(f"<b>Тип задачи:</b> <i>{type_text}</i>")
+
+    if task_type := data.get("every_n_days"):
+        lines.append(f"<b>Повторяется раз в:</b> <i>{str(task_type)} дней</i>")
+    else:
+        lines.append(f"<b>Отложенный запуск задачи в:</b> <i>{str(data.get('next_run_at'))}</i>")
+    return "\n".join(lines)
+
+
+def get_schedule_task_creation_message_by_state_schedule_task_obj(schedule_task, user_tg_id=None) -> str:
+    """
+    Генерирует сообщение с информацией о задаче на основе объекта ScheduleTask.
+    Показывает только те поля, которые не являются None или пустыми.
+    """
+
+    lines = []
+
+   # === Название задачи ===
+    lines.append(f"<b>Задача:</b> <i>{schedule_task.title}</i>")
+    # === Тип задачи ===
+    if hasattr(schedule_task, 'task_type') and schedule_task.task_type:
+        type_emoji = {
+            "Разово": "📌",
+            "По расписанию": "🔄"
+        }.get(schedule_task.task_type, "")
+
+        type_text = f"{type_emoji} {schedule_task.task_type}" if type_emoji else schedule_task.task_type
+        lines.append(f"<b>Тип задачи:</b> <i>{type_text}</i>")
+
+    # === Время создания задачи по расписнаию ===
+    if hasattr(schedule_task, 'next_run_at') and schedule_task.next_run_at:
+        lines.append(f"<b>Новая задача будет создана в:</b> <i>{str(schedule_task.next_run_at)}</i>")
+
+    # === Время создания задачи по расписнаию ===
+    if hasattr(schedule_task, 'every_n_days') and schedule_task.every_n_days:
+        lines.append(f"<b>Повторять каждые:</b> <i>{str(schedule_task.every_n_days)} дня(ей)</i>")
+
+    # === Группа ===
+    if hasattr(schedule_task, 'group_title') and schedule_task.group_title:
+        lines.append(f"<b>Группа:</b> <i>{schedule_task.group_title}</i>")
+
+    if user_tg_id:
+        if hasattr(schedule_task, 'creator_id') and schedule_task.creator_id:
+            lines.append(f"<b>Поставил(а) задачу:</b> <i>{'Вы' if schedule_task.creator_id == user_tg_id else schedule_task.creator_name}</i>")
+
+    # === Исполнитель ===
+    if hasattr(schedule_task, 'performer_name') and schedule_task.performer_name:
+        lines.append(f"<b>Исполнитель:</b> <i>{schedule_task.performer_name}</i>")
+
+    # === Приоритет ===
+    if hasattr(schedule_task, 'priority') and schedule_task.priority:
+        # Исправленный словарь - поддерживает значения с эмодзи и без
+        priority_emoji = {
+            "Обычный": "🟢",
+            "Высокий": "🟡",
+            "Срочный": "🔴",
+            "Низкий": "🔵",
+            "Средний": "🟠"
+        }.get(schedule_task.priority, "")
+
+        # Если эмодзи уже есть в строке, не добавляем повторно
+        if any(emoji in schedule_task.priority for emoji in ["🟢", "🟡", "🔴", "🟠", "🔵"]):
+            priority_text = schedule_task.priority
+        else:
+            priority_text = f"{priority_emoji} {schedule_task.priority}" if priority_emoji else schedule_task.priority
+
+        lines.append(f"<b>Приоритет:</b> <i>{priority_text}</i>")
+
+    if hasattr(schedule_task, 'address') and schedule_task.address:
+        lines.append(f"<b>Адрес:</b> <i>{schedule_task.address}</i>")
+
+    # === Описание ===
+    if hasattr(schedule_task, 'description') and schedule_task.description:
+        desc = schedule_task.description
+        if len(desc) > 400:
+            desc = desc[:397] + "..."
+        lines.append(f"<b>Описание:</b> <i>{desc}</i>")
+
+    return "\n".join(lines)
+

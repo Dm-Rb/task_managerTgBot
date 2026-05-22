@@ -25,7 +25,8 @@ def performer_task_keyboard(task_id: str, status: TaskStatus) -> InlineKeyboardM
 
     return builder.as_markup()
 
-def creator_task_keyboard(task_id: str) -> InlineKeyboardMarkup:
+
+def cancel_task_keyboard(task_id: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.button(
@@ -36,3 +37,17 @@ def creator_task_keyboard(task_id: str) -> InlineKeyboardMarkup:
     builder.adjust(1)
 
     return builder.as_markup()
+
+
+def cancel_scheduler_task_keyboard(scheduler_task_id: str) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="❌ Отменить задачу",
+        callback_data=f"scheduler_task:cancel:{scheduler_task_id}"
+    )
+
+    builder.adjust(1)
+
+    return builder.as_markup()
+

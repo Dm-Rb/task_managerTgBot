@@ -28,9 +28,22 @@ def main_menu_keyboard(
                 text="➕ Создать новую задачу"
             )
         ])
+
+        keyboard.append([
+            KeyboardButton(
+                text="📅 Создать шаблон задачи по расписанию"
+            )
+        ])
+
         keyboard.append([
             KeyboardButton(
                 text="🗓 Список всех активных задач"
+            )
+        ])
+
+        keyboard.append([
+            KeyboardButton(
+                text="📆 Список шаблонов задач по-расписанию"
             )
         ])
 

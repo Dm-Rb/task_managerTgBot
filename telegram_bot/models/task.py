@@ -65,9 +65,9 @@ class Task:
     completed_at: Optional[datetime] = None
 
     # Для циклических задач
-    every_n_days: Optional[int] = None
-
+    parent_id: str or None = None
     is_active: bool = True
+
 
 
 @dataclass

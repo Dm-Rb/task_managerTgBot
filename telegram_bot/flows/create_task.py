@@ -3,7 +3,8 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from telegram_bot.keyboards import create_task as keyboards
 from telegram_bot.states import CreateTaskStates  # FSM
-from telegram_bot.messages.task import get_task_creation_message_by_state_data
+from telegram_bot.messages.task import get_task_creation_message_by_state_data, \
+    get_schedule_task_creation_message_by_state_data
 from telegram_bot.services.user_service import UserService
 from telegram_bot.services.group_service import GroupService
 
@@ -12,7 +13,7 @@ from telegram_bot.storage.task_cache import AddressTemplate
 
 
 async def show_templates_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
-                                   task_service: TaskService, additional_text=""):
+                                   task_service: TaskService, additional_text="", scheduler=False):
     """Показывает список шаблонов задач"""
     task_templates = task_service.get_all_task_templates()
 
@@ -32,8 +33,11 @@ async def show_templates_selection(message_or_callback: CallbackQuery or Message
             reply_markup=keyboard,
             parse_mode="HTML"
         )
+    if scheduler:
+        await state.update_data(scheduler=True)  # указывает, что это объект ScheduledTask. False -> Task
 
     await state.set_state(CreateTaskStates.choosing_template)
+
 
 async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
                                  task_service: TaskService, additional_text=''):
@@ -133,12 +137,6 @@ async def show_task_confirmation(message_or_callback, state: FSMContext):
     """Показывает финальное подтверждение создания задачи"""
 
     text = await get_task_creation_message_by_state_data(state)
-
-    # await callback.message.edit_text(
-    #     text=text,
-    #     reply_markup=keyboards.confirm_create_new_task(),
-    #     parse_mode="HTML"
-    # )
     if isinstance(message_or_callback, Message):  # отправили  /create_task
         await message_or_callback.answer(
             text,
@@ -149,6 +147,26 @@ async def show_task_confirmation(message_or_callback, state: FSMContext):
         await message_or_callback.message.edit_text(
             text,
             reply_markup=keyboards.confirm_create_new_task(),
+            parse_mode="HTML"
+        )
+
+    await state.set_state(CreateTaskStates.waiting_confirmation)
+
+
+async def show_schedule_task_confirmation(message_or_callback, state: FSMContext):
+    """Показывает финальное подтверждение создания конфигурации задачи по расписанию"""
+
+    text = await get_schedule_task_creation_message_by_state_data(state)
+    if isinstance(message_or_callback, Message):  # отправили  /create_task
+        await message_or_callback.answer(
+            text,
+            reply_markup=keyboards.confirm_create_schedule(),
+            parse_mode="HTML"
+        )
+    else:  # нажатие на инлайн кнопку
+        await message_or_callback.message.edit_text(
+            text,
+            reply_markup=keyboards.confirm_create_schedule(),
             parse_mode="HTML"
         )
 
@@ -175,3 +193,38 @@ async def show_task_recurring_selection(callback: CallbackQuery, state: FSMConte
         parse_mode="HTML"
     )
     await state.set_state(CreateTaskStates.choosing_task_type)
+
+
+async def show_recurrence_task_repeat(message_or_callback: CallbackQuery or Message, state: FSMContext):
+    text = "Укажите интервал дней для пересоздания задачи. \n<i>Например если ввести “5”, задача будет пересоздаваться раз в 5 дней </i>"
+    if isinstance(message_or_callback, Message):  # отправили  /create_task
+        await message_or_callback.answer(
+            text,
+            reply_markup=None,
+            parse_mode="HTML"
+        )
+    else:  # нажатие на инлайн кнопку
+        await message_or_callback.message.edit_text(
+            text,
+            reply_markup=None,
+            parse_mode="HTML"
+        )
+    await state.set_state(CreateTaskStates.choosing_repeat)
+
+
+async def show_delay_hours_selection (message_or_callback: CallbackQuery or Message, state: FSMContext):
+    text = "Укажите количество часов, через которое необходимо создать задачу (с текущего момента)"
+    if isinstance(message_or_callback, Message):  #
+        await message_or_callback.answer(
+            text,
+            reply_markup=None,
+            parse_mode="HTML"
+        )
+    else:  # нажатие на инлайн кнопку
+        await message_or_callback.message.edit_text(
+            text,
+            reply_markup=None,
+            parse_mode="HTML"
+        )
+    await state.set_state(CreateTaskStates.choosing_delay)
+

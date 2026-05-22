@@ -234,7 +234,7 @@ def task_type_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.button(
-        text=f"📌 {TaskType.ONCE.value}",
+        text=f"📌 {TaskType.ONCE.value}, с отложенным стартом",
         callback_data="task_type:once"
     )
     builder.button(
@@ -296,12 +296,28 @@ def confirm_create_new_task() -> InlineKeyboardMarkup:
     """Подтверждение или Отмена создания задачи"""
     builder = InlineKeyboardBuilder()
     builder.button(
+        text="❌ Отменить",
+        callback_data="new_task:cancel"
+    )
+    builder.button(
         text="✅ Создать задачу",
         callback_data="new_task:create"
     )
+    builder.adjust(2)
+
+    return builder.as_markup()
+
+
+def confirm_create_schedule() -> InlineKeyboardMarkup:
+    """Подтверждение или Отмена создания задачи"""
+    builder = InlineKeyboardBuilder()
     builder.button(
         text="❌ Отменить",
-        callback_data="new_task:cancel"
+        callback_data="create_schedule:cancel"
+    )
+    builder.button(
+        text="✅ Создать конфигурацию задачи",
+        callback_data="create_schedule:create"
     )
     builder.adjust(2)
 
