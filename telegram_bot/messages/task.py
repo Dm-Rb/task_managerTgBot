@@ -135,6 +135,7 @@ def get_task_message_by_task_obj(task: Task, user_tg_id=None) -> str:
             hasattr(task, 'accepted_at') and task.accepted_at and
             hasattr(task, 'completed_at') and task.completed_at
     ):
+
         delta = task.completed_at - task.accepted_at
 
         total_seconds = int(delta.total_seconds())

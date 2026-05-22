@@ -33,6 +33,6 @@ class CreateSchedulerTaskStates(StatesGroup):  # FSM для логическог
 
 
 class CompleteTaskStates(StatesGroup):  # FSM для логического бока completing_task
-
+    
     waiting_media = State()
     waiting_comment = State()

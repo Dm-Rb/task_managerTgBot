@@ -48,7 +48,7 @@ async def create_new_task_handler(message: Message, state: FSMContext, task_serv
     await state.set_state(CreateTaskStates.choosing_template)
 
 
-@router.message(F.text == "📅 Создать конфигурацию задачи по расписанию")
+@router.message(F.text == "📅 Создать шаблон задачи по расписанию")
 async def create_new_scheduler_task_handler(message: Message, state: FSMContext, task_service, user_service):
     """ Старт создания задачи по расписанию"""
     user = user_service.cache.get(message.from_user.id)
@@ -83,7 +83,7 @@ async def show_all_tasks_button(message: Message, runtime_service, user_service)
     # if user.role == 1:  # исполнитель задачи
 
 
-@router.message(F.text == "📆 Список всех конфигураций задач по-расписанию")
+@router.message(F.text == "📆 Список шаблонов задач по-расписанию")
 async def show_all_tasks_button(message: Message, runtime_service, user_service):
     user = user_service.cache.get(message.from_user.id)
     if user.role != 2:

@@ -111,6 +111,11 @@ class TaskTable(Base):
         default="Разово"
     )
 
+    address: Mapped[str] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+
     # ==========================================
     # DATES
     # ==========================================
@@ -129,32 +134,6 @@ class TaskTable(Base):
         DateTime,
         nullable=True
     )
-
-    # ==========================================
-    # RECURRING TASKS
-    # ==========================================
-
-    recurrence_interval: Mapped[str or None] = mapped_column(
-        String(64),
-        nullable=True
-    )
-
-    every_n: Mapped[int or None] = mapped_column(
-        Integer,
-        nullable=True
-    )
-
-    next_execution_at: Mapped[datetime or None] = mapped_column(
-        DateTime,
-        nullable=True
-    )
-
-    parent_task_id: Mapped[str or None] = mapped_column(
-        String(32),
-        nullable=True,
-        index=True
-    )
-
     # ==========================================
     # FLAGS
     # ==========================================

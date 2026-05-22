@@ -17,6 +17,65 @@ class TaskService:
         self.indexes = TaskIndexes()
         self.scheduler_task_cache: dict[str, ScheduledTask] = cache.schedule
 
+    async def warmup(self):
+        """
+        Прогрев кешей из базы данных
+        """
+        active_tasks = await self.database.get_active_tasks()
+
+        for row in active_tasks:
+            task = Task(
+                task_id=row.task_id,
+                title=row.title,
+                description=row.description,
+                group_id=row.group_id,
+                topic_id=row.topic_id,
+                group_title=row.group_title,
+                creator_id=row.creator_id,
+                creator_name=row.creator_name,
+                performer_id=row.performer_id,
+                performer_name=row.performer_name,
+                priority=row.priority,
+                status=TaskStatus(row.status),
+                task_type=TaskType(row.task_type),
+                address=row.address,
+                created_at=row.created_at,
+                accepted_at=row.accepted_at,
+                completed_at=row.completed_at,
+                is_active=row.is_active
+            )
+
+            self.task_cache[task.task_id] = task
+
+        for task in self.task_cache.values():
+            self.indexes.register_task(task)
+
+        # TASK TEMPLATES CACHE
+        unique_pairs = await self.database.get_unique_titles_descriptions()
+        for title, description in unique_pairs:
+            template = TaskTemplate(
+                title=title,
+                description=description
+            )
+
+            self.task_templates_cache.append(template)
+        # ADDRESS TEMPLATES CACHE
+
+        self.address_templates_cache.clear()
+
+        unique_addresses = await self.database.get_unique_addresses()
+
+        for address in unique_addresses:
+
+            if not address:
+                continue
+
+            template = AddressTemplate(
+                address=address
+            )
+
+            self.address_templates_cache.append(template)
+
     def add_task_template(self, title: str, description: str):
         self.task_templates_cache.append(
             TaskTemplate(
@@ -74,7 +133,7 @@ class TaskService:
     def get_task(self, task_id: str) -> Task or None:
         return self.task_cache.get(task_id)
 
-    def upsert_task(self, task: Task) -> Task:
+    async def upsert_task(self, task: Task) -> Task:
         """
         Создать или обновить задачу
         """
@@ -85,10 +144,10 @@ class TaskService:
             self.indexes.register_task(task)
             return task
         self.task_cache[task.task_id] = task
-
+        await self.database.upsert(task)
         return task
 
-    def add_task(self,
+    async def add_task(self,
         title: str,
         description: str,
         group_id: int,
@@ -106,7 +165,7 @@ class TaskService:
         Создать и добавить задачу в cache
         """
         task_id = uuid4().hex[:16]  # генерим уникальный id
-        created_at = datetime.datetime.now(datetime.timezone.utc)
+        created_at = datetime.datetime.now()
         task = Task(
             task_id=task_id,
             title=title,
@@ -128,16 +187,17 @@ class TaskService:
         self.task_cache[task_id] = task
         self.indexes.register_task(task)
         # Добавить логику записи в базу данных в базу данных
+        await self.database.upsert(task)
         return task
 
-    def remove_task(self, task_id: str):
+    async def remove_task(self, task_id: str):
         task = self.get_task(task_id)
         if not task:
             return
         self.indexes.remove_task(task)
         self.task_cache.pop(task_id, None)
 
-        # Добавить логику записи в базу данных в базу данных если статус не Отменено
+        await self.database.delete(task_id)
 
     ##############
     def add_schedule(self,
@@ -209,7 +269,7 @@ class TaskService:
                 return None
 
         task_id = uuid4().hex[:16]  # генерим уникальный id
-        datetime_now = datetime.datetime.now(datetime.timezone.utc)
+        datetime_now = datetime.datetime.now()
 
         new_task = Task(
             task_id=task_id,

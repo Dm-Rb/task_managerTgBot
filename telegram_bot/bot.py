@@ -53,7 +53,7 @@ async def start_bot():
     # бизнес логика, объединяющая чтение\запись в самописный кеш и базу данных
     user_service = UserService(user_cache, user_database)
     group_service = GroupService(group_cache, group_database)
-    task_service = TaskService(task_cache, None)
+    task_service = TaskService(task_cache, task_database)
     notification_service = NotificationService(bot)
     runtime_service = TaskRuntimeService(task_service, notification_service, user_service)
 
@@ -71,7 +71,7 @@ async def start_bot():
     # прогревваем кеш из базы данных
     await user_service.warm_up()
     await group_service.warm_up()
-
+    await task_service.warmup()
     dp.include_router(handlers_router)
     dp.include_router(callbacks_create_task)
     dp.include_router(callbacks_update_task)

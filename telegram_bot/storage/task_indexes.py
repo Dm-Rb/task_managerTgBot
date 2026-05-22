@@ -10,6 +10,8 @@ class TaskIndexes:
         # {creator_user_id: set(task_id, task_id, ...), ...}
         self.creator_tasks: dict[int, set[str]] = {}  # создатель и задачи
 
+
+
     def register_task(self, task: Task):
         # созадаёт в словаре ключ task.performer_id и значение  task.task_id
         self.performer_tasks.setdefault(task.performer_id, set()).add(task.task_id)

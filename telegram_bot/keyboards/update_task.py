@@ -51,3 +51,19 @@ def cancel_scheduler_task_keyboard(scheduler_task_id: str) -> InlineKeyboardMark
 
     return builder.as_markup()
 
+
+def confirm_keyboard(action: str, object_id: str) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="✅ Да",
+        callback_data=f"confirm:{action}:{object_id}:yes"
+    )
+
+    builder.button(
+        text="❌ Нет",
+        callback_data=f"confirm:{action}:{object_id}:no"
+    )
+
+    builder.adjust(2)
+    return builder.as_markup()

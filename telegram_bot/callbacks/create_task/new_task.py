@@ -20,7 +20,7 @@ async def create_new_task_handker(callback: CallbackQuery, state: FSMContext,
     if state_data.get('scheduler', None):
         return
     # передаём данные в кеш task_service
-    task = task_service.add_task(
+    task = await task_service.add_task(
         title=state_data['template_title'],
         description=state_data['template_description'],
         group_id=state_data['group_id'],

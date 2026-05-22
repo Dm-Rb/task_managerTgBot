@@ -140,9 +140,9 @@ class TaskRuntimeService:
         # Обновляем задачу
         # =====================================
         task.status = TaskStatus.IN_PROGRESS
-        task.accepted_at = datetime.now(timezone.utc)
+        task.accepted_at = datetime.now()
 
-        self.task_service.upsert_task(task)
+        await self.task_service.upsert_task(task)
 
         # =====================================
         # Уведомления
@@ -167,7 +167,7 @@ class TaskRuntimeService:
         task.status = TaskStatus.CANCELLED
 
         # удаляем задачу из кеша (объект задачи мы вернём)
-        self.task_service.remove_task(task_id)
+        await self.task_service.remove_task(task_id)
 
         # =====================================
         # Уведомления
@@ -191,12 +191,12 @@ class TaskRuntimeService:
 
         # Обновляем объект задачи
         task.status = TaskStatus.COMPLETED
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now()
         task.is_active = False
 
         # удаляем задачу из кеша (объект задачи мы вернём)
-        self.task_service.remove_task(task_id)
-
+        await self.task_service.remove_task(task_id)
+        await self.task_service.database.upsert(task)
         # =====================================
         # Уведомления
         # =====================================
