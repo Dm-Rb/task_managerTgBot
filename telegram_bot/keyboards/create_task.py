@@ -205,7 +205,7 @@ def performers_keyboard(performers: list[User], page: int = 0) -> InlineKeyboard
         except:
             performer_name = performer.first_name
         builder.button(
-            text=f"{ROLES[performer.role]} {performer.full_name()}",
+            text=f"{ROLES[performer.role]} {performer_name}",
             callback_data=f"performer:select:{performer.tg_id}"
         )
 
