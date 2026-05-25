@@ -198,7 +198,6 @@ def performers_keyboard(performers: list[User], page: int = 0) -> InlineKeyboard
     end = start + PAGE_SIZE
 
     current_performers = performers[start:end]
-    print(current_performers)
     ROLES = {2: "🧑🏻‍💻", 1: "👨🏻‍💼"}
     for performer in current_performers:
         try:

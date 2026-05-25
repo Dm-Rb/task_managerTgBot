@@ -37,12 +37,8 @@ class UserService:
         for user in users.values():
             if user.tg_id == exclude_tg_id:
                 continue
-
-            # только сотрудники
-            # if user.role == 1:
-            #     user.first_name_ = "👨🏻‍💼 " +  user.first_name
-            # elif user.role == 2:
-            #     user.first_name_ = "🧑🏻‍💻 " +  user.first_name
+            if user.role not in (1, 2):
+                continue
             result.append(user)
         #
         return result
