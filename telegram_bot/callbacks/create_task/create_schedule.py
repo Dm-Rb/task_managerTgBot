@@ -25,7 +25,7 @@ async def create_new_scheduler_task_handler(callback: CallbackQuery, state: FSMC
     else:
         next_run_at = datetime.datetime.now().replace(second=0, microsecond=0) # задача по расписанию новая создаётся сразу
 
-    schedule_task = task_service.add_schedule(
+    schedule_task = await task_service.add_schedule(
         title=state_data.get('template_title', None),
         description=state_data.get('template_description', None),
         group_id=state_data.get('group_id', None),

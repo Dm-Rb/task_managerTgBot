@@ -1,4 +1,3 @@
-# database/repositories/group_repository.py
 
 from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload

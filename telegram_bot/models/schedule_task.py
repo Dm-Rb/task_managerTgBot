@@ -22,31 +22,7 @@ class ScheduledTask:
     created_at: datetime
     task_type: TaskType = TaskType.RECURRING
 
-    # ==========================================
-    # SCHEDULE
-    # ==========================================
-
+    # Раз в сколько дней создавать задачу
     every_n_days:  Optional[int] = None
-    """
-    Раз в сколько дней создавать задачу
-    """
-
-    # start_at: Optional[datetime] = None
-    # """
-    # Отложенный запуск.
-    # Пока дата не наступила —
-    # scheduler игнорирует задачу.
-    # """
-
+    # Создать задачу в:
     next_run_at: Optional[datetime] = None
-    """
-    Когда scheduler должен
-    создать следующую задачу
-    """
-
-    last_run_at: Optional[datetime] = None
-    """
-    Когда последний раз
-    была создана задача
-    """
-

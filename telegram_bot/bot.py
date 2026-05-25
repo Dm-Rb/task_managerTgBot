@@ -23,6 +23,7 @@ from database.init_db import init_db
 from database.repositories.user import UserRepository
 from database.repositories.group import GroupRepository
 from database.repositories.task import TaskRepository
+from database.repositories.scheduled_task import ScheduledTaskRepository
 
 
 from aiogram.types import BotCommand
@@ -46,6 +47,7 @@ async def start_bot():
     user_database = UserRepository()
     group_database = GroupRepository()
     task_database = TaskRepository()
+    scheduled_task_database = ScheduledTaskRepository()
     # объекты для операций с самописным кешем
     user_cache = UserCache()
     group_cache = GroupCache()
@@ -53,7 +55,7 @@ async def start_bot():
     # бизнес логика, объединяющая чтение\запись в самописный кеш и базу данных
     user_service = UserService(user_cache, user_database)
     group_service = GroupService(group_cache, group_database)
-    task_service = TaskService(task_cache, task_database)
+    task_service = TaskService(task_cache, task_database, scheduled_task_database)
     notification_service = NotificationService(bot)
     runtime_service = TaskRuntimeService(task_service, notification_service, user_service)
 

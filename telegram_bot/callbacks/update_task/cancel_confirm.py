@@ -48,7 +48,7 @@ async def confirm_handler(callback: CallbackQuery, runtime_service, task_service
 
         # SCHEDULER
         elif action == "scheduler_task:cancel":
-            scheduler_task = task_service.scheduler_task_cache.pop(object_id, None)
+            scheduler_task = await task_service.remove_task_scheduler(object_id)
             prew_text = "❌ <b>Вы удалили эту конфигурацию задачи по расписанию</b>\n\n"
             await callback.message.edit_text(
                 text=prew_text + get_schedule_task_creation_message_by_state_schedule_task_obj(scheduler_task),
@@ -57,8 +57,6 @@ async def confirm_handler(callback: CallbackQuery, runtime_service, task_service
             )
 
             await callback.answer()
-
-
 
         await callback.answer()
 

@@ -20,7 +20,6 @@ class SchedulerService:
         while self.is_running:
             try:
                 await self.tick()
-
             except Exception as e:
                 print(f"[SCHEDULER ERROR] {e}")
             # проверка раз в минуту
@@ -39,15 +38,13 @@ class SchedulerService:
             schedule_task = self.task_service.scheduler_task_cache[schedule_key]
             # if not schedule.next_run_at:
             #     continue
-
             # ==========================================
             # TIME TO CREATE TASK
             # ==========================================
 
             if now >= schedule_task.next_run_at:
-
                 # создаём задачу
-                task = self.task_service.create_task_from_scheduler(
+                task = await self.task_service.create_task_from_scheduler(
                     schedule=schedule_task
                 )
 

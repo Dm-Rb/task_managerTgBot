@@ -37,7 +37,6 @@ async def recurrence_task_repeat_handler(callback: CallbackQuery, state: FSMCont
     except:
         await callback.answer("Ошибка при выборе исполнителя", show_alert=True)
         return
-
     if every_n == 'set':
         # меняем состояние, удаляем сообщение. срабатывает хендлер на сосотояние который просит пользователя ввести данные
         await show_recurrence_task_repeat(callback, state)
@@ -48,6 +47,7 @@ async def recurrence_task_repeat_handler(callback: CallbackQuery, state: FSMCont
 
 @router.callback_query(F.data.startswith("task_type:once"))
 async def task_type_select_once_handler(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(task_type=TaskType.ONCE.value)
     await show_delay_hours_selection(callback, state)
     await callback.answer()
 

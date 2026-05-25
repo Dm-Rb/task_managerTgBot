@@ -196,7 +196,7 @@ class TaskRuntimeService:
 
         # удаляем задачу из кеша (объект задачи мы вернём)
         await self.task_service.remove_task(task_id)
-        await self.task_service.database.upsert(task)
+        await self.task_service.task_database.upsert(task)
         # =====================================
         # Уведомления
         # =====================================
