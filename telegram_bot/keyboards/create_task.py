@@ -199,7 +199,6 @@ def performers_keyboard(performers: list[User], page: int = 0) -> InlineKeyboard
 
     current_performers = performers[start:end]
     ROLES = {2: "🧑🏻‍💻", 1: "👨🏻‍💼"}
-    print(performers)
     for performer in current_performers:
         try:
             performer_name = performer.full_name()
