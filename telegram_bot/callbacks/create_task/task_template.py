@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from telegram_bot.states import CreateTaskStates
 from telegram_bot.models.task import TaskTemplate
 from telegram_bot.services.task_service import TaskService
-from telegram_bot.keyboards.create_task import task_templates_keyboard
+from telegram_bot.keyboards.create_task import task_templates_keyboard, confirm_delete
 from telegram_bot.flows.create_task import show_selected, show_templates_selection, show_address_selection
 
 
@@ -78,15 +78,6 @@ async def template_back_handler(callback: CallbackQuery, state: FSMContext, task
     await callback.answer()
 
 
-@router.callback_query(F.data == "task_template:delete")
-async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
-    state_data = await state.get_data()
-    if state_data.get('template_title', None) and state_data.get('template_description', None):
-        task_service.remove_task_template(state_data['template_title'], state_data['template_description'])
-    await show_templates_selection(callback, state, task_service)
-    await callback.answer()
-
-
 #раскомментировать колбек адресов
 @router.callback_query(F.data == "task_template:continue")
 async def template_continue_handler(callback: CallbackQuery, state: FSMContext, task_service):
@@ -96,10 +87,30 @@ async def template_continue_handler(callback: CallbackQuery, state: FSMContext, 
     await callback.answer()
 
 
-# # удалить этот кусок
-# @router.callback_query(F.data == "task_template:continue")
-# async def template_continue_handler(callback: CallbackQuery, state: FSMContext, group_service):
-#     """Перейти на этап выбора группы"""
-#
-#     await show_groups_selection(callback, state, group_service)
+# @router.callback_query(F.data == "task_template:delete")
+# async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
+#     state_data = await state.get_data()
+#     if state_data.get('template_title', None) and state_data.get('template_description', None):
+#         task_service.remove_task_template(state_data['template_title'], state_data['template_description'])
+#     await show_templates_selection(callback, state, task_service)
 #     await callback.answer()
+
+@router.callback_query(F.data == "task_template:delete")
+async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
+    await callback.message.edit_text(text='Вы действительно хотите удалить этот объект?', reply_markup=confirm_delete("task_template"))
+    await callback.answer()
+
+
+@router.callback_query(F.data == "confirm_delete_no:task_template")
+async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
+    await show_templates_selection(callback, state, task_service)
+    await callback.answer()
+
+@router.callback_query(F.data == "confirm_delete_yes:task_template")
+async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
+    state_data = await state.get_data()
+    if state_data.get('template_title', None) and state_data.get('template_description', None):
+        task_service.remove_task_template(state_data['template_title'], state_data['template_description'])
+    await show_templates_selection(callback, state, task_service)
+    await callback.answer()
+

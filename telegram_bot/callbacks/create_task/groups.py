@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
-from telegram_bot.keyboards.create_task import groups_keyboard
+from telegram_bot.keyboards.create_task import groups_keyboard, confirm_delete
 from aiogram.fsm.context import FSMContext
 from telegram_bot.flows.create_task import show_selected, show_groups_selection, \
     show_no_performers_in_group, show_performer_selection
@@ -66,18 +66,6 @@ async def group_back_handler(callback: CallbackQuery, state: FSMContext, group_s
     await callback.answer()
 
 
-@router.callback_query(F.data == "group:delete")
-async def create_task_template(callback: CallbackQuery, state: FSMContext, group_service: GroupService):
-    state_data = await state.get_data() # получить данные у далить через сервис
-    if state_data.get('group_id', None):
-        if state_data.get('topic_id', None):
-            await group_service.remove_topic(state_data['group_id'], state_data['topic_id'])
-        else:
-            await group_service.remove_group(state_data['group_id'])
-    await show_groups_selection(callback, state, group_service)
-    await callback.answer()
-
-
 @router.callback_query(F.data == "group:continue")
 async def group_continue_handler(callback: CallbackQuery, state: FSMContext, group_service, user_service):
     """Перейти на этап выбора исполнителя"""
@@ -96,6 +84,41 @@ async def group_continue_handler(callback: CallbackQuery, state: FSMContext, gro
     await show_performer_selection(callback, state, performers)
 
 
+# @router.callback_query(F.data == "group:delete")
+# async def create_task_template(callback: CallbackQuery, state: FSMContext, group_service: GroupService):
+#     state_data = await state.get_data() # получить данные у далить через сервис
+#     if state_data.get('group_id', None):
+#         if state_data.get('topic_id', None):
+#             await group_service.remove_topic(state_data['group_id'], state_data['topic_id'])
+#         else:
+#             await group_service.remove_group(state_data['group_id'])
+#     await show_groups_selection(callback, state, group_service)
+#     await callback.answer()
+
+
+@router.callback_query(F.data == "group:delete")
+async def group_delete_button(callback: CallbackQuery):
+    await callback.message.edit_text(text='Вы действительно хотите удалить этот объект?',
+                                     reply_markup=confirm_delete("group"))
+    await callback.answer()
+
+@router.callback_query(F.data == "confirm_delete_no:group")
+async def group_delete_button_not_confirm(callback: CallbackQuery, state: FSMContext, group_service):
+    await show_groups_selection(callback, state, group_service)
+
+    await callback.answer()
+
+
+@router.callback_query(F.data == "confirm_delete_yes:group")
+async def group_delete_button_confirm(callback: CallbackQuery, state: FSMContext, group_service):
+    state_data = await state.get_data() # получить данные у далить через сервис
+    if state_data.get('group_id', None):
+        if state_data.get('topic_id', None):
+            await group_service.remove_topic(state_data['group_id'], state_data['topic_id'])
+        else:
+            await group_service.remove_group(state_data['group_id'])
+    await show_groups_selection(callback, state, group_service)
+    await callback.answer()
 
 
 

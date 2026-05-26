@@ -325,3 +325,19 @@ def confirm_create_schedule() -> InlineKeyboardMarkup:
     builder.adjust(2)
 
     return builder.as_markup()
+
+
+def confirm_delete(callback_data) -> InlineKeyboardMarkup:
+    """Подтверждение или Отмена создания задачи"""
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Отмена",
+        callback_data=f"confirm_delete_no:{callback_data}"
+    )
+    builder.button(
+        text="Удалить",
+        callback_data=f"confirm_delete_yes:{callback_data}"
+    )
+    builder.adjust(2)
+
+    return builder.as_markup()
