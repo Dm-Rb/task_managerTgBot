@@ -1,18 +1,17 @@
-# Генерация XLSX отчёта по выполненным задачам
-from datetime import datetime, timedelta
+from io import BytesIO
+from datetime import datetime
 
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 
+from aiogram.types import BufferedInputFile
+
 
 async def export_completed_tasks_report(repository):
     """
-    Генерация XLSX отчёта по выполненным задачам
-    за последние 30 дней.
-
-    :param repository: TaskRepository
-    :return: путь к xlsx файлу
+    Генерация XLSX отчёта в памяти
+    без сохранения на диск
     """
 
     tasks = await repository.get_completed_tasks_last_30_days()
@@ -150,14 +149,21 @@ async def export_completed_tasks_report(repository):
         ].width = adjusted_width
 
     # ==========================================
-    # SAVE FILE
+    # SAVE TO MEMORY
     # ==========================================
+
+    file_stream = BytesIO()
+
+    wb.save(file_stream)
+
+    file_stream.seek(0)
 
     filename = (
         f"completed_tasks_report_"
         f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
     )
 
-    wb.save(filename)
-
-    return filename
+    return BufferedInputFile(
+        file=file_stream.read(),
+        filename=filename
+    )
