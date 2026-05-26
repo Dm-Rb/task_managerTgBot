@@ -61,6 +61,12 @@ def main_menu_keyboard(
             text="🚪 Разлогиниться"
         )
     ])
+    if role == 2:
+        keyboard.append([
+            KeyboardButton(
+                text="📊 Отчёт по выполненным задачам"
+            )
+        ])
 
     return ReplyKeyboardMarkup(
         keyboard=keyboard,

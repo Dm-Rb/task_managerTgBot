@@ -1,10 +1,6 @@
 from telegram_bot.messages.task import get_schedule_task_creation_message_by_state_schedule_task_obj
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
-
-from telegram_bot.services.task_runtime_service import TaskRuntimeService
-from telegram_bot.services.task_service import TaskService
-
 from telegram_bot.messages.task import get_task_message_by_task_obj
 from telegram_bot.keyboards.update_task import performer_task_keyboard, confirm_keyboard
 
