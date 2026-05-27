@@ -110,7 +110,11 @@ def get_task_message_by_task_obj(task: Task, user_tg_id=None) -> str:
         }.get(task.task_type, "")
 
         type_text = f"{type_emoji} {task.task_type}" if type_emoji else task.task_type
-        lines.append(f"<b>Тип задачи:</b> <i>{type_text}</i>")
+        if isinstance(type_text, str):
+            lines.append(f"<b>Тип задачи:</b> <i>{type_text}</i>")
+        else:
+            lines.append(f"<b>Тип задачи:</b> <i>{type_text.value}</i>")
+
     # === Время реагирования ===
     if (
             hasattr(task, 'accepted_at') and task.accepted_at and

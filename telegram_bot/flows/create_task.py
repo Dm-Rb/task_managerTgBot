@@ -36,7 +36,7 @@ async def show_templates_selection(message_or_callback: CallbackQuery or Message
     if scheduler:
         await state.update_data(scheduler=True)  # указывает, что это объект ScheduledTask. False -> Task
 
-    await state.set_state(CreateTaskStates.choosing_template)
+    await state.set_state(CreateTaskStates.waiting_template_description)
 
 
 async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,

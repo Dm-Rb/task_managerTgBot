@@ -56,7 +56,7 @@ async def complete_task_media_group_handler(message: Message, state: FSMContext,
 
     await message.answer(
         "✍️ Добавьте текстовый комментарий "
-        "к отчёту о проделанной работе."
+        "к отчёту о проделанной работе. После этого задача будет закрыта\n👇🏻 👇🏻 👇🏻🔻🔻🔻🔻🔻👇🏻👇🏻👇🏻"
     )
 
     await state.set_state(CompleteTaskStates.waiting_comment)
@@ -100,7 +100,7 @@ async def complete_task_media_handler(message: Message, state: FSMContext, runti
     # хендлером из модуля complete_task_comment_handler
     await message.answer(
         "✍️ Добавьте текстовый комментарий "
-        "к отчёту о проделанной работе."
+        "к отчёту о проделанной работе. После этого задача будет закрыта\n👇🏻 👇🏻 👇🏻🔻🔻🔻🔻🔻👇🏻👇🏻👇🏻"
     )
 
     await state.set_state(

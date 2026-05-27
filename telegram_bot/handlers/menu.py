@@ -45,7 +45,7 @@ async def create_new_task_handler(message: Message, state: FSMContext, task_serv
 
     # Делегируем отображение в flow
     await show_templates_selection(message, state, task_service)
-    await state.set_state(CreateTaskStates.choosing_template)
+    await state.set_state(CreateTaskStates.waiting_template_description)
 
 
 @router.message(F.text == "📅 Создать шаблон задачи по расписанию")
