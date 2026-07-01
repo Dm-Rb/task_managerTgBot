@@ -24,7 +24,6 @@ class ScheduledTaskRepository:
             )
 
             db_task = result.scalar_one_or_none()
-            print(task)
             # ==========================================
             # UPDATE
             # ==========================================

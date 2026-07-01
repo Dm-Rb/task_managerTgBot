@@ -8,6 +8,8 @@ from telegram_bot.services.task_service import TaskService
 from telegram_bot.flows.create_task import show_templates_selection, show_selected
 from telegram_bot.messages.task import get_task_creation_message_by_state_data
 from telegram_bot.keyboards import create_task as keyboards
+
+
 router = Router(name="handlers_create_task")
 
 
@@ -38,7 +40,6 @@ async def template_title_handler(message: Message, state: FSMContext):
 
 @router.message(CreateTaskStates.waiting_template_description)
 async def template_description_handler(message: Message, state: FSMContext, task_service):
-
     # достаём из фсм титульник нового шаблона
     data = await state.get_data()
     title = data.get("template_title", "")

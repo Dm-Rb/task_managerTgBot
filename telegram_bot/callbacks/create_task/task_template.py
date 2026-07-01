@@ -106,11 +106,13 @@ async def create_task_template(callback: CallbackQuery, state: FSMContext, task_
     await show_templates_selection(callback, state, task_service)
     await callback.answer()
 
+
 @router.callback_query(F.data == "confirm_delete_yes:task_template")
 async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
     state_data = await state.get_data()
     if state_data.get('template_title', None) and state_data.get('template_description', None):
         task_service.remove_task_template(state_data['template_title'], state_data['template_description'])
     await show_templates_selection(callback, state, task_service)
+    await state.clear()  # очищаем состояние
     await callback.answer()
 

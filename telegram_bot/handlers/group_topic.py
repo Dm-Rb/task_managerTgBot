@@ -146,9 +146,3 @@ async def forum_topic_deleted_handler(
         group_id=chat.id,
         topic_id=topic_id
     )
-
-    print(
-        f"Топик удалён: "
-        f"group_id={chat.id}, "
-        f"topic_id={topic_id}"
-    )
