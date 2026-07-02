@@ -45,12 +45,18 @@ router = Router()
 
 @router.callback_query(F.data.startswith("task:cancel:"))
 async def task_cancel_request(callback: CallbackQuery):
-    """Колбек с прослойкой из нопок подтверждения. Старый колбек закомменчен"""
     task_id = callback.data.split(":")[2]
 
-    await callback.message.edit_text(
-        "Вы уверены, что хотите отменить задачу?",
-        reply_markup=confirm_keyboard("task:cancel", task_id)
-    )
+    if callback.message.text:
+        await callback.message.edit_text(
+            "Вы уверены, что хотите отменить задачу?",
+            reply_markup=confirm_keyboard("task:cancel", task_id)
+        )
+    else:
+        # если сообщение с документом — бот просто отправит новое сообщение с кнопками.
+        await callback.message.answer(
+            "Вы уверены, что хотите отменить задачу?",
+            reply_markup=confirm_keyboard("task:cancel", task_id)
+        )
 
     await callback.answer()
