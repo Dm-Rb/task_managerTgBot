@@ -21,7 +21,6 @@ class ScheduledTask:
     priority: str
     created_at: datetime
     task_type: TaskType = TaskType.RECURRING
-
     # Раз в сколько дней создавать задачу
     every_n_days:  Optional[int] = None
     # Создать задачу в:
