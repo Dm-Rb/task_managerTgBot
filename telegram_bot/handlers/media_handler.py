@@ -1,8 +1,9 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from telegram_bot.states import CompleteTaskStates
+from telegram_bot.states import CompleteTaskStates, CreateTaskStates
 from telegram_bot.services.task_runtime_service import TaskRuntimeService
+from aiogram.exceptions import TelegramBadRequest
 import asyncio
 
 
@@ -106,3 +107,23 @@ async def complete_task_media_handler(message: Message, state: FSMContext, runti
     await state.set_state(
         CompleteTaskStates.waiting_comment
     )
+
+
+@router.message(CreateTaskStates.waiting_files, F.document)
+async def document_handler(message: Message, state: FSMContext):
+    data = await state.get_data()
+    upload_message_id = data.get("upload_message_id")
+
+    if upload_message_id:
+        try:
+            # удаляем клавиатуру из предыдущего сообщения
+            await message.bot.edit_message_reply_markup(
+                chat_id=message.chat.id,
+                message_id=upload_message_id,
+                reply_markup=None
+            )
+        except TelegramBadRequest:
+            pass
+
+    await state.update_data(file_id=message.document.file_id)
+

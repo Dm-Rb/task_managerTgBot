@@ -7,7 +7,7 @@ from telegram_bot.messages.task import get_task_creation_message_by_state_data, 
     get_schedule_task_creation_message_by_state_data
 from telegram_bot.services.user_service import UserService
 from telegram_bot.services.group_service import GroupService
-
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from telegram_bot.services.task_service import TaskService
 from telegram_bot.storage.task_cache import AddressTemplate
 
@@ -228,3 +228,17 @@ async def show_delay_hours_selection (message_or_callback: CallbackQuery or Mess
         )
     await state.set_state(CreateTaskStates.choosing_delay)
 
+
+async def upload_files(callback: CallbackQuery, state: FSMContext):
+    """Прикрепить документ к задаче"""
+    kb = InlineKeyboardBuilder()
+    kb.button(text="Продолжить без вложения документа", callback_data="file:next")
+
+    msg = await callback.message.edit_text(
+        "<b>Прикрепите файл в режиме документа</b>",
+        reply_markup=kb.as_markup(),
+        parse_mode='HTML'
+    )
+
+    await state.update_data(upload_message_id=msg.message_id)
+    await state.set_state(CreateTaskStates.waiting_files)
