@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from telegram_bot.flows.create_task import show_selected, show_priority_selection, \
-    show_task_type_selection, show_task_confirmation
+    show_task_type_selection, show_task_confirmation, upload_files
 from telegram_bot.models.task import TaskPriority, TaskType
 
 
@@ -40,7 +40,8 @@ async def priority_continue_handler(callback: CallbackQuery, state: FSMContext, 
         await callback.answer()
     else:  # имеем дело с Task. Заканчиваем цепочку и переходим к подтверждению
         await state.update_data(task_type=TaskType.ONCE.value)  # устанавливаем тип: Разово
-        await show_task_confirmation(callback, state) # отображаем клавиатуру подтверждения создания таски
+        await upload_files(callback, state)  # обображаем приглашение прикрепить документ
+        # await show_task_confirmation(callback, state) # отображаем клавиатуру подтверждения создания таски
 
 
 @router.callback_query(F.data == "priority:back")

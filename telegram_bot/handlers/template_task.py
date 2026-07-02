@@ -13,7 +13,6 @@ router = Router()
 
 @router.message(CreateTaskStates.waiting_template_title)
 async def template_title_handler(message: Message, state: FSMContext):
-
     # записываем в фсм титульник нового шаблона
     await state.update_data(template_title=message.text)
     # меняем состояние
@@ -24,7 +23,6 @@ async def template_title_handler(message: Message, state: FSMContext):
 
 @router.message(CreateTaskStates.waiting_template_description)
 async def template_description_handler(message: Message, state: FSMContext, task_service):
-
     # достаём из фсм титульник нового шаблона
     data = await state.get_data()
     title = data["template_title"]

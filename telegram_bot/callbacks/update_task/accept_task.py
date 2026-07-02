@@ -36,11 +36,25 @@ async def accept_task_handler(
         return
 
     prew_text = "🆙 <b>Вы в процессе выполнения данной задачи</b>\n\n"
-    await callback.message.edit_text(
-        text=prew_text + get_task_message_by_task_obj(task),
-        reply_markup=performer_task_keyboard(task_id, task.status),
-        parse_mode="HTML"
-    )
+    msg = callback.message
+
+    if msg.document:
+        await msg.edit_caption(
+            caption=prew_text + get_task_message_by_task_obj(task),
+            reply_markup=performer_task_keyboard(task_id, task.status),
+            parse_mode="HTML",
+        )
+    else:
+        await msg.edit_text(
+            text=prew_text + get_task_message_by_task_obj(task),
+            reply_markup=performer_task_keyboard(task_id, task.status),
+            parse_mode="HTML",
+        )
+    # await callback.message.edit_text(
+    #     text=prew_text + get_task_message_by_task_obj(task),
+    #     reply_markup=performer_task_keyboard(task_id, task.status),
+    #     parse_mode="HTML"
+    # )
 
     await callback.answer(
         "✅ Задача принята в работу"

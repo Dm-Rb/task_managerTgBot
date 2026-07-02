@@ -3,8 +3,8 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from telegram_bot.models.task import TaskType
 from telegram_bot.flows.create_task import (show_selected, show_task_type_selection, show_schedule_task_confirmation,
-                                            show_task_recurring_selection,show_recurrence_task_repeat,
-                                            show_delay_hours_selection)
+                                            show_task_recurring_selection, show_recurrence_task_repeat,
+                                            show_delay_hours_selection, upload_files)
 
 
 router = Router()
@@ -42,7 +42,7 @@ async def recurrence_task_repeat_handler(callback: CallbackQuery, state: FSMCont
         await show_recurrence_task_repeat(callback, state)
     elif every_n == "1":
         await state.update_data(every_n_days=1)
-        await show_schedule_task_confirmation(callback, state)
+        await upload_files(callback, state)
 
 
 @router.callback_query(F.data.startswith("task_type:once"))

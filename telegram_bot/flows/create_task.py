@@ -137,38 +137,87 @@ async def show_task_confirmation(message_or_callback, state: FSMContext):
     """Показывает финальное подтверждение создания задачи"""
 
     text = await get_task_creation_message_by_state_data(state)
-    if isinstance(message_or_callback, Message):  # отправили  /create_task
-        await message_or_callback.answer(
-            text,
+    data = await state.get_data()
+    file_id = data.get("file_id")
+    # Получаем объект Message независимо от того, что пришло:
+    # Message или CallbackQuery
+    msg = (
+        message_or_callback
+        if isinstance(message_or_callback, Message)
+        else message_or_callback.message
+    )
+    if file_id:
+        # Если открыто сообщение с кнопками — удаляем его
+        if not isinstance(message_or_callback, Message):
+            await msg.delete()
+
+        # Отправляем документ с подписью и кнопками
+        await msg.answer_document(
+            document=file_id,
+            caption=text,
             reply_markup=keyboards.confirm_create_new_task(),
-            parse_mode="HTML"
+            parse_mode="HTML",
         )
-    else:  # нажатие на инлайн кнопку
-        await message_or_callback.message.edit_text(
-            text,
-            reply_markup=keyboards.confirm_create_new_task(),
-            parse_mode="HTML"
-        )
+    else:
+        if isinstance(message_or_callback, Message):
+            # Если функция вызвана из Message (например, после /create_task)
+            await msg.answer(
+                text,
+                reply_markup=keyboards.confirm_create_new_task(),
+                parse_mode="HTML",
+            )
+        else:
+            # Если вызвана из CallbackQuery
+            await msg.edit_text(
+                text,
+                reply_markup=keyboards.confirm_create_new_task(),
+                parse_mode="HTML",
+            )
 
     await state.set_state(CreateTaskStates.waiting_confirmation)
 
 
 async def show_schedule_task_confirmation(message_or_callback, state: FSMContext):
-    """Показывает финальное подтверждение создания конфигурации задачи по расписанию"""
+    """Показывает финальное подтверждение создания конфигурации задачи по расписанию."""
 
     text = await get_schedule_task_creation_message_by_state_data(state)
-    if isinstance(message_or_callback, Message):  # отправили  /create_task
-        await message_or_callback.answer(
-            text,
+    data = await state.get_data()
+
+    # Получаем объект Message независимо от того,
+    # вызвана функция из Message или CallbackQuery
+    msg = (
+        message_or_callback
+        if isinstance(message_or_callback, Message)
+        else message_or_callback.message
+    )
+
+    file_id = data.get("file_id")
+
+    if file_id:
+        # Если пришли из CallbackQuery, удаляем старое сообщение
+        if not isinstance(message_or_callback, Message):
+            await msg.delete()
+
+        # Отправляем документ с подписью и кнопками
+        await msg.answer_document(
+            document=file_id,
+            caption=text,
             reply_markup=keyboards.confirm_create_schedule(),
-            parse_mode="HTML"
+            parse_mode="HTML",
         )
-    else:  # нажатие на инлайн кнопку
-        await message_or_callback.message.edit_text(
-            text,
-            reply_markup=keyboards.confirm_create_schedule(),
-            parse_mode="HTML"
-        )
+    else:
+        if isinstance(message_or_callback, Message):
+            await msg.answer(
+                text,
+                reply_markup=keyboards.confirm_create_schedule(),
+                parse_mode="HTML",
+            )
+        else:
+            await msg.edit_text(
+                text,
+                reply_markup=keyboards.confirm_create_schedule(),
+                parse_mode="HTML",
+            )
 
     await state.set_state(CreateTaskStates.waiting_confirmation)
 
@@ -232,10 +281,10 @@ async def show_delay_hours_selection (message_or_callback: CallbackQuery or Mess
 async def upload_files(callback: CallbackQuery, state: FSMContext):
     """Прикрепить документ к задаче"""
     kb = InlineKeyboardBuilder()
-    kb.button(text="Продолжить без вложения документа", callback_data="file:next")
+    kb.button(text="Продолжить без вложения документа ▶️", callback_data="file:next")
 
     msg = await callback.message.edit_text(
-        "<b>Прикрепите файл в режиме документа</b>",
+        "Загрузите файл в режиме документа",
         reply_markup=kb.as_markup(),
         parse_mode='HTML'
     )

@@ -35,6 +35,40 @@ class TaskRuntimeService:
             if (task := self.task_service.get_task(task_id))
         ]
 
+    async def send_task_message_to_user(self, user_id: int, text: str, task, keyboard=None):
+        """базовая функция отправки сообщения с детализацие задачи.
+        отправляет ли текст или текст прикреплённым документом"""
+        if task.file_id:
+            await self.notifications.send_document_to_user(
+                user_id=user_id,
+                document_id=task.file_id,
+                text=text,
+                reply_markup=keyboard
+            )
+        else:
+            await self.notifications.send_to_user(
+                user_id=user_id,
+                text=text,
+                reply_markup=keyboard
+            )
+
+    async def send_task_message_to_group(self, group_id: int, text: str, task):
+        """базовая функция отправки сообщения с детализацие задачи.
+        отправляет ли текст или текст прикреплённым документом"""
+        if task.file_id:
+            await self.notifications.send_document_to_group(
+                group_id=group_id,
+                document_id=task.file_id,
+                text=text,
+                thread_id=task.topic_id
+            )
+        else:
+            await self.notifications.send_to_group(
+                group_id=group_id,
+                text=text,
+                thread_id=task.topic_id
+            )
+
     async def send_tasks_to_performer(self, performer_id: int):
         """
         Отправляет все связанные задачи исполнителю в личные сообщения
@@ -48,14 +82,11 @@ class TaskRuntimeService:
             return
 
         for task in tasks:
-            await self.notifications.send_to_user(
-                user_id=performer_id,
-                text=messages_build.get_task_message_by_task_obj(task),
-                reply_markup=keyboards.performer_task_keyboard(
-                    task.task_id,
-                    task.status
-                )
-            )
+            # text_message = messages_build.get_task_message_by_task_obj(task)
+            text_message = messages_build.get_task_message_by_task_obj(task, performer_id)
+
+            keyboard = keyboards.performer_task_keyboard(task.task_id, task.status)
+            await self.send_task_message_to_user(performer_id, text_message, task, keyboard)
 
     async def send_tasks_to_creator(self, creator_id: int):
         """
@@ -71,11 +102,9 @@ class TaskRuntimeService:
             return
 
         for task in tasks:
-            await self.notifications.send_to_user(
-                user_id=creator_id,
-                text=messages_build.get_task_message_by_task_obj(task),
-                reply_markup=keyboards.cancel_task_keyboard(task.task_id)
-            )
+            text_message = messages_build.get_task_message_by_task_obj(task)
+            keyboard = keyboards.cancel_task_keyboard(task.task_id)
+            await self.send_task_message_to_user(creator_id, text_message, task, keyboard)
 
     async def get_all_tasks(self, user_tg_id):
         """Получить все активные задачи за исклчением тех, где юзер является исполнителем. Это альтернатива send_tasks_to_creator.
@@ -86,13 +115,12 @@ class TaskRuntimeService:
                 user_tg_id,
                 "Пусто! Нет активных задач"
             )
-
         for task in tasks:
-            await self.notifications.send_to_user(
-                user_id=user_tg_id,
-                text=messages_build.get_task_message_by_task_obj(task, user_tg_id),
-                reply_markup=keyboards.cancel_task_keyboard(task.task_id)
-            )
+            text_message = messages_build.get_task_message_by_task_obj(task, user_tg_id)
+
+            keyboard = keyboards.cancel_task_keyboard(task.task_id)
+
+            await self.send_task_message_to_user(user_tg_id, text_message, task, keyboard)
 
     async def get_all_scheduler_tasks(self, user_tg_id):
         """Получить все конфигурации задач по расписанию за исклчением тех, где юзер является исполнителем.
@@ -113,20 +141,25 @@ class TaskRuntimeService:
 
     async def register_new_task(self, task: Task) -> Task or None:
         """
-        Создаёт задачу, сохраняет её и уведомляет исполнителя
+        Создаёт задачу, сохраняет её и уведомляет исполнителя и группу
         """
 
         task_text = messages_build.get_notification_task_message('new', task)
         task_text_for_creator = messages_build.get_notification_task_message('creator', task)
+
         # Отправляем мессагу создателю без кнопки
-        await self.notifications.send_to_user(user_id=task.creator_id, text=task_text_for_creator)
+        # await self.notifications.send_to_user(user_id=task.creator_id, text=task_text_for_creator)
+        await self.send_task_message_to_user(user_id=task.creator_id, text=task_text_for_creator, task=task)
+
         # Отправляем мессагу исполнителю с кнопкой Принять в работу
         keyboard_performer = keyboards.performer_task_keyboard(task.task_id, task.status)
-        await self.notifications.send_to_user(user_id=task.performer_id, text=task_text, reply_markup=keyboard_performer)
+        # await self.notifications.send_to_user(user_id=task.performer_id, text=task_text, reply_markup=keyboard_performer)
+        await self.send_task_message_to_user(user_id=task.performer_id, text=task_text, task=task, keyboard=keyboard_performer)
 
         # Отправляем мессагу в группу (без кнопки) если исполнитель НЕ админ
-        if not self.user_service.is_user_admin(task.performer_id):
-            await self.notifications.send_to_group(group_id=task.group_id, text=task_text, thread_id=task.topic_id)
+        # if not self.user_service.is_user_admin(task.performer_id):
+            # await self.notifications.send_to_group(group_id=task.group_id, text=task_text, thread_id=task.topic_id)
+        await self.send_task_message_to_group(group_id=task.group_id, text=task_text, task=task)
         return task
 
     async def accept_task(self, task_id: str) -> Task or None:
@@ -135,25 +168,22 @@ class TaskRuntimeService:
 
         if not task:
             return None
-
-        # =====================================
         # Обновляем задачу
-        # =====================================
         task.status = TaskStatus.IN_PROGRESS
         task.accepted_at = datetime.now()
 
         await self.task_service.upsert_task(task)
 
-        # =====================================
         # Уведомления
-        # =====================================
         task_text = messages_build.get_notification_task_message('process', task)
         # Отправляем мессагу создателю без кнопки
-        await self.notifications.send_to_user(user_id=task.creator_id, text=task_text)
+        # await self.notifications.send_to_user(user_id=task.creator_id, text=task_text)
+        await self.send_task_message_to_user(user_id=task.creator_id, text=task_text, task=task)
 
         # Отправляем мессагу в группу (без кнопки) если исполнитель НЕ админ
-        if not self.user_service.is_user_admin(task.performer_id):
-            await self.notifications.send_to_group(group_id=task.group_id, text=task_text, thread_id=task.topic_id)
+        # if not self.user_service.is_user_admin(task.performer_id):
+            # await self.notifications.send_to_group(group_id=task.group_id, text=task_text, thread_id=task.topic_id)
+        await self.send_task_message_to_group(group_id=task.group_id, text=task_text, task=task)
         return task
 
     async def cancel_task(self, task_id: str) -> Task or None:
@@ -168,19 +198,20 @@ class TaskRuntimeService:
 
         # удаляем задачу из кеша (объект задачи мы вернём)
         await self.task_service.remove_task(task_id)
-
-        # =====================================
         # Уведомления
-        # =====================================
         if task.is_active:
             task_text = messages_build.get_notification_task_message('cancelled', task)
             # Отправляем мессагу исполнителю без кнопки
-            await self.notifications.send_to_user(user_id=task.performer_id, text=task_text)
-            # Отправляем мессагу в группу (без кнопки) если исполнитель НЕ админ
-            if not self.user_service.is_user_admin(task.performer_id):
-                await self.notifications.send_to_group(group_id=task.group_id, text=task_text, thread_id=task.topic_id)
+            # await self.notifications.send_to_user(user_id=task.performer_id, text=task_text)
+            await self.send_task_message_to_user(user_id=task.performer_id, text=task_text, task=task)
+
+            # # Отправляем мессагу в группу (без кнопки) если исполнитель НЕ админ
+            # if not self.user_service.is_user_admin(task.performer_id):
+            #     await self.send_task_message_to_group(group_id=task.group_id, text=task_text, task)
             # # Отправляем мессагу в группу (без кнопки)
             # await self.notifications.send_to_group(group_id=task.group_id, text=task_text, thread_id=task.topic_id)
+            await self.send_task_message_to_group(group_id=task.group_id, text=task_text, task=task)
+
         return task
 
     async def complete_task(self, task_id: str, comment: str, media) -> Task or None:

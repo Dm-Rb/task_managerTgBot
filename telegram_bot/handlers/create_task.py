@@ -40,6 +40,10 @@ async def template_title_handler(message: Message, state: FSMContext):
 
 @router.message(CreateTaskStates.waiting_template_description)
 async def template_description_handler(message: Message, state: FSMContext, task_service):
+    if message.text.startswith('/'):
+        await state.clear()
+        await message.answer('Отменено')
+        return
     # достаём из фсм титульник нового шаблона
     data = await state.get_data()
     title = data.get("template_title", "")

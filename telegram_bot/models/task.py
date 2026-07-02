@@ -42,7 +42,6 @@ class TaskPriority(Enum):
 
 @dataclass
 class Task:
-    # === Поля без значения по умолчанию (обязательные) ===
     task_id: str
     title: str
     description: str
@@ -56,14 +55,14 @@ class Task:
     priority: str
     created_at: datetime
 
-    # === Поля с значениями по умолчанию (должны быть в конце) ===
+    # Поля с значениями по умолчанию (должны быть в конце)
     address: Optional[str] = None
     status: TaskStatus = TaskStatus.CREATED
     task_type: TaskType = TaskType.ONCE
 
     accepted_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-
+    file_id: Optional[str] = None  # tg document telegram id
     # Для циклических задач
     parent_id: str or None = None
     is_active: bool = True

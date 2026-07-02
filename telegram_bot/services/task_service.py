@@ -228,7 +228,8 @@ class TaskService:
         priority: str,
         task_type: TaskType,
         address: str or None = None,
-        topic_id: int or None = None
+        topic_id: int or None = None,
+        file_id: str or None = None
     ) -> Task:
         """
         Создать и добавить задачу в cache
@@ -250,7 +251,8 @@ class TaskService:
             priority=priority,
             status=TaskStatus.CREATED,
             task_type=task_type,
-            created_at=created_at
+            created_at=created_at,
+            file_id=file_id
         )
 
         self.task_cache[task_id] = task

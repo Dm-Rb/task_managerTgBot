@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from telegram_bot.states import CompleteTaskStates, CreateTaskStates
 from telegram_bot.services.task_runtime_service import TaskRuntimeService
 from aiogram.exceptions import TelegramBadRequest
+from telegram_bot.flows.create_task import show_task_confirmation
 import asyncio
 
 
@@ -126,4 +127,5 @@ async def document_handler(message: Message, state: FSMContext):
             pass
 
     await state.update_data(file_id=message.document.file_id)
+    await show_task_confirmation(message, state)
 

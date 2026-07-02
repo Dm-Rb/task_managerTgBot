@@ -20,7 +20,7 @@ class NotificationService:
             return False
 
     async def send_to_group(self, group_id: int, text: str,
-                            reply_markup: InlineKeyboardMarkup = None, parse_mode: str = "HTML", thread_id: int or None = None) -> bool:
+                           parse_mode: str = "HTML", thread_id: int or None = None) -> bool:
         """
         Отправить сообщение в группу
         """
@@ -29,7 +29,6 @@ class NotificationService:
             await self.bot.send_message(
                 chat_id=group_id,
                 text=text,
-                reply_markup=reply_markup,
                 parse_mode=parse_mode,
                 message_thread_id=thread_id
 
@@ -186,4 +185,27 @@ class NotificationService:
             chat_id=group_id,
             media=media_group,
             message_thread_id=thread_id
+        )
+
+    async def send_document_to_user(self, user_id: int, document_id: str, text: str,
+                                    reply_markup: InlineKeyboardMarkup = None, parse_mode: str = "HTML"):
+        """Отпраляет пользователю документ и текст"""
+
+        await self.bot.send_document(
+            chat_id=user_id,
+            document=document_id,
+            caption=text,
+            reply_markup=reply_markup,
+            parse_mode=parse_mode
+        )
+
+    async def send_document_to_group(self, group_id: int, document_id: str, text: str,
+                                     thread_id: int or None = None, parse_mode: str = "HTML"):
+        """Отпраляет в группу документ и текст"""
+        await self.bot.send_document(
+            chat_id=group_id,
+            document=document_id,
+            caption=text,
+            message_thread_id=thread_id,
+            parse_mode=parse_mode
         )

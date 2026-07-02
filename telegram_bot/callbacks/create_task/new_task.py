@@ -13,7 +13,7 @@ router = Router()
 
 
 @router.callback_query(F.data.startswith("new_task:create"))
-async def create_new_task_handker(callback: CallbackQuery, state: FSMContext,
+async def create_new_task(callback: CallbackQuery, state: FSMContext,
                                   runtime_service: TaskRuntimeService, task_service: TaskService):
 
     state_data = await state.get_data()
@@ -32,21 +32,13 @@ async def create_new_task_handker(callback: CallbackQuery, state: FSMContext,
         performer_name=state_data['performer_name'],
         priority=state_data['priority'],
         task_type=state_data['task_type'],
-        address=state_data.get('address', None)
+        address=state_data.get('address', None),
+        file_id=state_data.get('file_id', None)
             )
     await runtime_service.register_new_task(task) # передаём объект в runtime_service для рассылки уведомлений
-    # prew_text = "🆕 <b>Вы создали новую задачу</b>\n\n"
-    # await callback.message.edit_text(
-    #     text=prew_text + get_task_message_by_task_obj(task),
-    #     reply_markup=None,
-    #     parse_mode="HTML"
-    # )
     await callback.message.delete()
     await callback.answer("✅ Задача создана")
     await state.clear()
-
-
-
 
 
 @router.callback_query(F.data.startswith("new_task:cancel"))
