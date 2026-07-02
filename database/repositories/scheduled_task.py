@@ -46,7 +46,7 @@ class ScheduledTaskRepository:
                 db_task.priority = task.priority
                 db_task.address = task.address
 
-                db_task.task_type = task.task_type.value
+                db_task.task_type = task.task_type
 
                 db_task.created_at = task.created_at
 

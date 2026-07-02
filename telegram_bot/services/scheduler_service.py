@@ -29,18 +29,12 @@ class SchedulerService:
 
         now = datetime.now().replace(second=0, microsecond=0)
 
-
         for schedule_key in self.task_service.scheduler_task_cache.keys():
 
-            # ==========================================
             # SKIP INVALID
-            # ==========================================
             schedule_task = self.task_service.scheduler_task_cache[schedule_key]
             # if not schedule.next_run_at:
             #     continue
-            # ==========================================
-            # TIME TO CREATE TASK
-            # ==========================================
 
             if now >= schedule_task.next_run_at:
                 # создаём задачу
