@@ -1,6 +1,8 @@
 """Подключаем все модули пакета в единый роутер"""
 from aiogram import Router
-from telegram_bot.callbacks.create_task.task_template import router as task_template_router
+from telegram_bot.callbacks.create_task.tittle import router as task_tittle_router
+from telegram_bot.callbacks.create_task.description import router as task_description_router
+
 from telegram_bot.callbacks.create_task.address import router as address_router
 from telegram_bot.callbacks.create_task.groups import router as group_router
 from telegram_bot.callbacks.create_task.performer import router as performer_router
@@ -14,7 +16,8 @@ from telegram_bot.callbacks.create_task.attached_files import router as attached
 router = Router(name="callbacks_create_task")
 
 
-router.include_router(task_template_router)
+router.include_router(task_tittle_router)
+router.include_router(task_description_router)
 router.include_router(address_router)
 router.include_router(group_router)
 router.include_router(performer_router)

@@ -3,6 +3,7 @@ from aiogram.types import InlineKeyboardMarkup
 from telegram_bot.models.task import TaskTemplate, TaskPriority, TaskType, AddressTemplate
 from telegram_bot.models.group import Group
 from telegram_bot.models.user import User
+from database.models.task_tittle import TaskTittleTemplateTable
 
 
 PAGE_SIZE = 10
@@ -29,7 +30,7 @@ def _add_pagination_buttons(page: int, end: int, arrow: list, builder: InlineKey
     return pagination_buttons
 
 
-def task_templates_keyboard(task_templates: list[TaskTemplate], page: int = 0) -> InlineKeyboardMarkup:
+def task_templates_keyboard(task_tittles: list[TaskTittleTemplateTable], page: int = 0) -> InlineKeyboardMarkup:
 
     builder = InlineKeyboardBuilder()
 
@@ -39,20 +40,20 @@ def task_templates_keyboard(task_templates: list[TaskTemplate], page: int = 0) -
     # фрагментируем список для пагинации
     start = page * PAGE_SIZE
     end = start + PAGE_SIZE
-    current_templates = task_templates[start:end]  # срез
+    current_task_tittles: list[TaskTittleTemplateTable] = task_tittles[start:end]  # срез
 
-    # создаём кнопки из объектов TaskTemplate списка current_templates
-    for index, template in enumerate(current_templates, start=start):
+    # создаём кнопки из объектов current_task_tittles списка current_task_tittles
+    for task_tittle in current_task_tittles:
         builder.button(
-            text=template.title,
-            callback_data=f"task_template:select:{index}"
+            text=task_tittle.tittle,
+            callback_data=f"task_template:select:{str(task_tittle.id)}"
         )
 
     # добавить кнопки пагинации Назад\Вперёд в эту клавиатуру
-    pagination_buttons = _add_pagination_buttons(page, end, task_templates, builder, 'task_template')
+    pagination_buttons = _add_pagination_buttons(page, end, task_tittles, builder, 'task_template')
     rows = [1]
 
-    rows.extend([1] * len(current_templates))
+    rows.extend([1] * len(current_task_tittles))
 
     if pagination_buttons:
         rows.append(len(pagination_buttons))
@@ -62,7 +63,6 @@ def task_templates_keyboard(task_templates: list[TaskTemplate], page: int = 0) -
     return builder.as_markup()
 
 def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) -> InlineKeyboardMarkup:
-
 
     builder = InlineKeyboardBuilder()
     # кнопка добавить шаблон
@@ -85,7 +85,7 @@ def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) 
 
     for index, template in enumerate(current_templates, start=start):
         builder.button(
-            text=template.address,
+            text=template,
             callback_data=f"address:select:{index}"
         )
 

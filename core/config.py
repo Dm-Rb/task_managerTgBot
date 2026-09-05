@@ -10,6 +10,7 @@ load_dotenv()
 
 class Config:
     BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+    LOGIN_WEB = os.getenv("LOGIN_WEB")
     ADMIN_PSW = os.getenv("ADMIN_PASSWORD")
     USER_PSW = os.getenv("USER_PASSWORD")
     MAX_ATTS_PSW = int(os.getenv("MAX_ATTEMPTS_PASSWORD"))

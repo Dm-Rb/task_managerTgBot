@@ -9,17 +9,19 @@ from telegram_bot.services.user_service import UserService
 from telegram_bot.services.group_service import GroupService
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from telegram_bot.services.task_service import TaskService
+from telegram_bot.services.template_service import TemplateService
+
 from telegram_bot.storage.task_cache import AddressTemplate
 
 
-async def show_templates_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
-                                   task_service: TaskService, additional_text="", scheduler=False):
+async def show_tittles_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
+                                   template_service: TemplateService, additional_text="", scheduler=False):
     """Показывает список шаблонов задач"""
-    task_templates = task_service.get_all_task_templates()
+    task_tittles = await template_service.get_all_task_tittles()
 
     text = f"{additional_text}📔 <b>Выберите шаблон задачи или создайте новый</b>"
 
-    keyboard = keyboards.task_templates_keyboard(task_templates=task_templates)
+    keyboard = keyboards.task_templates_keyboard(task_tittles=task_tittles)
 
     if isinstance(message_or_callback, Message):  # отправили  /create_task
         await message_or_callback.answer(
@@ -36,13 +38,13 @@ async def show_templates_selection(message_or_callback: CallbackQuery or Message
     if scheduler:
         await state.update_data(scheduler=True)  # указывает, что это объект ScheduledTask. False -> Task
 
-    await state.set_state(CreateTaskStates.waiting_template_description)
+    # await state.set_state(CreateTaskStates.waiting_template_description)
 
 
 async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
-                                 task_service: TaskService, additional_text=''):
+                                 template_service: TemplateService, additional_text=''):
     """Показывает список шаблонов адресов"""
-    addresses_templates: list[AddressTemplate] = task_service.get_all_address_templates()
+    addresses_templates: list[AddressTemplate] = await template_service.get_all_adresses()
 
     text = f"{additional_text}🏘 <b>Укажите адрес:</b>"
 

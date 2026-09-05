@@ -4,7 +4,7 @@ from telegram_bot.keyboards.menu import main_menu_keyboard
 
 from telegram_bot.states import CreateTaskStates  # FSM
 
-from telegram_bot.flows.create_task import show_templates_selection
+from telegram_bot.flows.create_task import show_tittles_selection
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
@@ -30,7 +30,7 @@ async def show_tasks_handler(message: Message, user_service, state: FSMContext):
     await state.clear()
 
 @router.message(F.text == "➕ Создать новую задачу")
-async def create_new_task_handler(message: Message, state: FSMContext, task_service, user_service):
+async def create_new_task_handler(message: Message, state: FSMContext, template_service, user_service):
     """ Старт создания задачи """
     user = user_service.cache.get(message.from_user.id)
     if not user:
@@ -44,12 +44,11 @@ async def create_new_task_handler(message: Message, state: FSMContext, task_serv
         return await message.answer('У вас не достаточно прав для создания задач')
 
     # Делегируем отображение в flow
-    await show_templates_selection(message, state, task_service)
-    await state.set_state(CreateTaskStates.waiting_template_description)
+    await show_tittles_selection(message, state, template_service)
 
 
 @router.message(F.text == "📅 Создать шаблон задачи по расписанию")
-async def create_new_scheduler_task_handler(message: Message, state: FSMContext, task_service, user_service):
+async def create_new_scheduler_task_handler(message: Message, state: FSMContext, template_service, user_service):
     """ Старт создания задачи по расписанию"""
     user = user_service.cache.get(message.from_user.id)
     if not user:
@@ -62,7 +61,7 @@ async def create_new_scheduler_task_handler(message: Message, state: FSMContext,
     if not is_user_admin:
         return await message.answer('У вас не достаточно прав для создания задач')
 
-    await show_templates_selection(message, state, task_service, scheduler=True)
+    await show_tittles_selection(message, state, template_service, scheduler=True)
     await state.set_state(CreateTaskStates.choosing_template)
 
 

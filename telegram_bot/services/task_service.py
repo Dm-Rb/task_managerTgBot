@@ -72,40 +72,6 @@ class TaskService:
         for task in self.task_cache.values():
             self.indexes.register_task(task)
 
-        # ==========================================
-        # TASK TEMPLATES CACHE
-        # ==========================================
-
-        self.task_templates_cache.clear()
-
-        unique_pairs = await self.task_database.get_unique_titles_descriptions()
-
-        for title, description in unique_pairs:
-            template = TaskTemplate(
-                title=title,
-                description=description
-            )
-
-            self.task_templates_cache.append(template)
-
-        # ==========================================
-        # ADDRESS TEMPLATES CACHE
-        # ==========================================
-
-        self.address_templates_cache.clear()
-
-        unique_addresses = await self.task_database.get_unique_addresses()
-
-        for address in unique_addresses:
-
-            if not address:
-                continue
-
-            template = AddressTemplate(
-                address=address
-            )
-
-            self.address_templates_cache.append(template)
 
         # ==========================================
         # SCHEDULED TASK CACHE
@@ -144,33 +110,6 @@ class TaskService:
             )
 
             self.scheduler_task_cache[scheduled_task.id] = scheduled_task
-
-    def add_task_template(self, title: str, description: str):
-        self.task_templates_cache.append(
-            TaskTemplate(
-                title=title,
-                description=description
-            )
-        )
-
-    def get_all_task_templates(self) -> list:
-        return self.task_templates_cache
-
-    def get_task_template(self, index) -> TaskTemplate or None:
-        return self.task_templates_cache[index]
-
-    def remove_task_template(self, title: str, description: str) -> bool:
-        """
-        Удаляет шаблон адреса по значению address
-        """
-
-        for template in self.task_templates_cache:
-
-            if template.title == title and template.description == description:
-                self.task_templates_cache.remove(template)
-                return True
-
-        return False
 
     # адреса
 
