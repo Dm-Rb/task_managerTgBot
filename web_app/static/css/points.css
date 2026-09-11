@@ -1,0 +1,231 @@
+/* ========================================
+   TREE
+======================================== */
+
+.tree {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tree-node {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .03);
+}
+
+.tree-row {
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    gap: 8px;
+}
+
+.tree-toggle {
+    width: 28px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 5px;
+}
+
+.tree-toggle:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.tree-toggle.empty {
+    cursor: default;
+}
+
+.tree-toggle.empty:hover {
+    background: transparent;
+}
+
+.tree-icon {
+    width: 30px;
+    text-align: center;
+    font-size: 19px;
+    flex-shrink: 0;
+}
+
+.tree-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tree-title {
+    font-size: 14px;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.tree-subtitle {
+    margin-top: 2px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.tree-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.tree-action {
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    opacity: .75;
+}
+
+.tree-action:hover {
+    background: #f3f4f6;
+    opacity: 1;
+}
+
+/* CITY */
+
+.city-row {
+    padding-left: 8px;
+}
+
+.city-title {
+    font-weight: 600;
+}
+
+/* ADDRESS */
+
+.address-node {
+    margin-left: 38px;
+    border-left: 2px solid #e5e7eb;
+    border-radius: 0 8px 8px 0;
+    box-shadow: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.address-row {
+    min-height: 48px;
+    padding-left: 8px;
+}
+
+.address-title {
+    color: #374151;
+}
+
+/* POINT (название + ID аппарата в одном звене) */
+
+.point-node {
+    margin-left: 38px;
+    border-left: 2px solid #e5e7eb;
+    border-radius: 0 8px 8px 0;
+    box-shadow: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: 1px solid #eef0f2;
+}
+
+.point-row {
+    min-height: 50px;
+    padding-left: 46px;
+}
+
+.point-title {
+    font-weight: 500;
+}
+
+.point-machine {
+    margin-top: 2px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.point-machine-id {
+    color: #4b5563;
+}
+
+/* ========================================
+   MOBILE (points-specific)
+======================================== */
+
+@media (max-width: 700px) {
+    .address-node,
+    .point-node {
+        margin-left: 15px;
+    }
+
+    .point-row {
+        padding-left: 25px;
+    }
+}
+.field-with-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.field-with-button .form-select,
+.field-with-button .form-input {
+    flex: 1;
+}
+
+.icon-button {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.icon-button:hover:not(:disabled) {
+    background: #f2f4f7;
+}
+
+.icon-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.icon-button.confirm {
+    border-color: #2e7d32;
+    color: #2e7d32;
+}
+
+.icon-button.confirm:hover {
+    background: #e8f5e9;
+}
+
+.icon-button.cancel {
+    border-color: #c62828;
+    color: #c62828;
+}
+
+.icon-button.cancel:hover {
+    background: #fdecea;
+}

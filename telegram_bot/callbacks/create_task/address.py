@@ -21,7 +21,7 @@ async def address_page_handler(callback: CallbackQuery, template_service: Templa
         await callback.answer("Ошибка", show_alert=True)
         return
 
-    adresses: list[str] = await template_service.get_all_adresses()
+    adresses: list[str] = await template_service.get_all_adress_templates()
 
     await callback.message.edit_reply_markup(
         reply_markup=address_templates_keyboard(adresses, page=page
@@ -55,7 +55,7 @@ async def address_select_handler(callback: CallbackQuery, state: FSMContext, tem
         await callback.answer("Ошибка", show_alert=True)
         return
 
-    templates: list[AddressTemplate] = await template_service.get_all_adresses()
+    templates: list[AddressTemplate] = await template_service.get_all_adress_templates()
 
     if index >= len(templates):
         await callback.answer("Ошибка", show_alert=True)
@@ -114,6 +114,6 @@ async def address_delete_button_not_confirm(callback: CallbackQuery, state: FSMC
 async def address_delete_button_confirm(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
     state_data = await state.get_data()
     if state_data.get('address', None):
-        await template_service.remove_adress(state_data['address'])
+        await template_service.remove_adress_templates(state_data['address'])
     await show_address_selection(callback, state, template_service)
     await callback.answer()

@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Точки — Управление Telegram-ботом{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/points.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="section-header">
+    <h2 class="section-title">
+        📌 Все точки
+    </h2>
+    <button
+        class="primary-button"
+        type="button"
+        onclick="openCreatePoint()"
+    >
+        ＋ Добавить точку
+    </button>
+</div>
+
+<div
+    id="pointsTree"
+    class="tree"
+></div>
+
+<!-- POINT MODAL -->
+<div
+    id="pointModal"
+    class="modal-overlay"
+    onclick="closeModalOnOverlay(event, 'pointModal')"
+>
+    <div class="modal">
+        <h2
+            id="pointModalTitle"
+            class="modal-title"
+        >
+            Добавить точку
+        </h2>
+
+        <div class="form-group">
+    <label class="form-label" for="citySelect">
+        Город
+    </label>
+
+    <!-- Обычный режим: select + кнопка "+" -->
+    <div id="citySelectRow" class="field-with-button">
+        <select id="citySelect" class="form-select">
+            <option value="">Выберите город</option>
+        </select>
+        <button
+            id="cityAddBtn"
+            class="icon-button"
+            type="button"
+            title="Добавить новый город"
+            onclick="showNewCityInput()"
+        >
+            ＋
+        </button>
+    </div>
+
+    <!-- Режим создания: input + Создать/Отмена -->
+    <div id="cityCreateRow" class="field-with-button" style="display: none;">
+        <input
+            id="newCityInput"
+            class="form-input"
+            type="text"
+            placeholder="Название нового города"
+        >
+        <button
+            class="icon-button confirm"
+            type="button"
+            title="Создать"
+            onclick="createCity()"
+        >
+            ✓
+        </button>
+        <button
+            class="icon-button cancel"
+            type="button"
+            title="Отмена"
+            onclick="cancelNewCity()"
+        >
+            ✕
+        </button>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="addressSelect">
+        Адрес
+    </label>
+
+    <div id="addressSelectRow" class="field-with-button">
+        <select id="addressSelect" class="form-select">
+            <option value="">Выберите адрес</option>
+        </select>
+        <button
+            id="addressAddBtn"
+            class="icon-button"
+            type="button"
+            title="Добавить новый адрес"
+            onclick="showNewAddressInput()"
+            disabled
+        >
+            ＋
+        </button>
+    </div>
+
+    <div id="addressCreateRow" class="field-with-button" style="display: none;">
+        <input
+            id="newAddressInput"
+            class="form-input"
+            type="text"
+            placeholder="Название нового адреса"
+        >
+        <button
+            class="icon-button confirm"
+            type="button"
+            title="Создать"
+            onclick="createAddress()"
+        >
+            ✓
+        </button>
+        <button
+            class="icon-button cancel"
+            type="button"
+            title="Отмена"
+            onclick="cancelNewAddress()"
+        >
+            ✕
+        </button>
+    </div>
+</div>
+
+        <div class="form-group">
+            <label
+                class="form-label"
+                for="pointName"
+            >
+                Название точки
+            </label>
+            <input
+                id="pointName"
+                class="form-input"
+                type="text"
+                placeholder="Например: Магазин «Продукты»"
+            >
+        </div>
+
+        <div class="form-group">
+            <label
+                class="form-label"
+                for="machineId"
+            >
+                ID аппарата
+            </label>
+            <input
+                id="machineId"
+                class="form-input"
+                type="text"
+                placeholder="Например: 10234"
+            >
+        </div>
+
+        <div class="modal-actions">
+            <button
+                class="secondary-button"
+                type="button"
+                onclick="closePointForm()"
+            >
+                Отмена
+            </button>
+            <button
+                class="primary-button"
+                type="button"
+                onclick="savePoint()"
+            >
+                Сохранить
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div
+    id="deleteModal"
+    class="modal-overlay"
+    onclick="closeModalOnOverlay(event, 'deleteModal')"
+>
+    <div class="modal">
+        <h2 class="modal-title">
+            Подтверждение удаления
+        </h2>
+        <div class="delete-text">
+            Вы уверены, что хотите удалить эту запись?
+        </div>
+        <div class="modal-actions">
+            <button
+                class="secondary-button"
+                type="button"
+                onclick="closeDeleteModal()"
+            >
+                Нет
+            </button>
+            <button
+                class="danger-button"
+                type="button"
+                onclick="confirmDelete()"
+            >
+                Да
+            </button>
+        </div>
+    </div>
+</div>
+<!-- EDIT CITY MODAL -->
+<div
+    id="editCityModal"
+    class="modal-overlay"
+    onclick="closeModalOnOverlay(event, 'editCityModal')"
+>
+    <div class="modal">
+        <h2 class="modal-title">Редактировать город</h2>
+
+        <input type="hidden" id="editCityId">
+
+        <div class="form-group">
+            <label class="form-label" for="editCityName">Название города</label>
+            <input
+                id="editCityName"
+                class="form-input"
+                type="text"
+                placeholder="Например: Минск"
+            >
+        </div>
+
+        <div class="modal-actions">
+            <button class="secondary-button" type="button" onclick="closeEditCityModal()">Отмена</button>
+            <button class="primary-button" type="button" onclick="saveCityEdit()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT ADDRESS MODAL -->
+<div
+    id="editAddressModal"
+    class="modal-overlay"
+    onclick="closeModalOnOverlay(event, 'editAddressModal')"
+>
+    <div class="modal">
+        <h2 class="modal-title">Редактировать адрес</h2>
+
+        <input type="hidden" id="editAddressId">
+        <input type="hidden" id="editAddressCityId">
+
+        <div class="form-group">
+            <label class="form-label" for="editAddressName">Название адреса</label>
+            <input
+                id="editAddressName"
+                class="form-input"
+                type="text"
+                placeholder="Например: Независимости 132"
+            >
+        </div>
+
+        <div class="modal-actions">
+            <button class="secondary-button" type="button" onclick="closeEditAddressModal()">Отмена</button>
+            <button class="primary-button" type="button" onclick="saveAddressEdit()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/points.js"></script>
+{% endblock %}

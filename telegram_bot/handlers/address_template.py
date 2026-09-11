@@ -17,6 +17,6 @@ async def save_address_template(message: Message, state: FSMContext, template_se
     if len(address) >= 47:
         address = address[:47]  # что бы влезло в callback_data
 
-    await template_service.add_adress(address)
+    await template_service.add_adress_templates(address)
     # Делегируем отображение в flow
     await show_address_selection(message, state, template_service, "💬 Новый шаблон создан\n\n")

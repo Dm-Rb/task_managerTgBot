@@ -28,7 +28,7 @@ async def run():
     bot, dp, context = await create_bot()
 
     # Создаём FastAPI на том же context
-    # app = create_app(context)
+    app = create_app(context)
 
     # Запускаем scheduler
     scheduler_task = asyncio.create_task(
@@ -39,7 +39,7 @@ async def run():
 
         await asyncio.gather(
             dp.start_polling(bot),
-            # run_fastapi(app),
+            run_fastapi(app),
         )
 
     finally:
@@ -47,7 +47,6 @@ async def run():
         scheduler_task.cancel()
 
         await bot.session.close()
-
 
 if __name__ == "__main__":
     asyncio.run(run())

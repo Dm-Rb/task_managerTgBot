@@ -31,3 +31,12 @@ class UserCache(BaseCache):
         Добавить или обновить пользователя в кеше
         """
         self.users[user.tg_id] = user
+
+    def delete(self, tg_id: User) -> None:
+        """
+        Добавить или обновить пользователя в кеше
+        """
+        if self.users[tg_id]:            
+            del self.users[tg_id]
+    
+    

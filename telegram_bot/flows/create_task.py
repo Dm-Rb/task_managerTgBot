@@ -44,7 +44,7 @@ async def show_tittles_selection(message_or_callback: CallbackQuery or Message, 
 async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
                                  template_service: TemplateService, additional_text=''):
     """Показывает список шаблонов адресов"""
-    addresses_templates: list[AddressTemplate] = await template_service.get_all_adresses()
+    addresses_templates: list[AddressTemplate] = await template_service.get_all_adress_templates()
 
     text = f"{additional_text}🏘 <b>Укажите адрес:</b>"
 

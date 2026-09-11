@@ -19,6 +19,7 @@ from database.repositories.scheduled_task import ScheduledTaskRepository
 from database.repositories.task_tittle import TaskTittleRepository
 from database.repositories.city import CityRepository
 from database.repositories.adress import AdressRepository
+from database.repositories.point import PointRepository
 
 
 
@@ -35,7 +36,8 @@ class AppContext:
         self.task_tittle_database = TaskTittleRepository()
         self.city_database = CityRepository()
         self.adress_database = AdressRepository()
-
+        self.point_database = PointRepository()
+        
         # caches
         self.user_cache = UserCache()
         self.group_cache = GroupCache()
@@ -45,7 +47,8 @@ class AppContext:
         self.template_service = TemplateService(
             self.task_tittle_database,
             self.city_database,
-            self.adress_database
+            self.adress_database,
+            self.point_database
         )
 
         self.user_service = UserService(
@@ -82,3 +85,4 @@ class AppContext:
         await self.group_service.warm_up()
         await self.task_service.warmup()
         await self.template_service.warmup()
+

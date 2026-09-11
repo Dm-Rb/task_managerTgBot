@@ -1,6 +1,9 @@
 from sqlalchemy import delete, select
 from database.session import AsyncSessionLocal
 from database.models.city import CityTable
+from database.models.adress import AdressTable
+from database.models.point import PointTable
+
 
 
 class CityRepository:
@@ -66,12 +69,29 @@ class CityRepository:
     async def delete(self, template_id: int) -> bool:
 
         async with AsyncSessionLocal() as session:
+            # Сначала проверяем, существует ли город
             result = await session.execute(
-                delete(CityTable).where(
+                select(CityTable).where(
                     CityTable.id == template_id
+                )
+            )
+            template = result.scalar_one_or_none()
+            if template is None:
+                return False
+            # Удаляем все точки, связанные с городом
+            await session.execute(
+                delete(PointTable).where(
+                    PointTable.city_id == template_id
+                )
+            )
+            # Удаляем все адреса, связанные с городом
+            await session.execute(
+                delete(AdressTable).where(
+                    AdressTable.city_id == template_id
                 )
             )
 
             await session.commit()
 
-            return result.rowcount > 0
+        return
+        

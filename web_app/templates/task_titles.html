@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}
+Заголовки задач — Управление Telegram-ботом
+{% endblock %}
+
+{% block page_title %}
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', path='css/task_titles.css') }}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="task-titles">
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            📝 Заголовки задач
+        </h2>
+
+        <button
+            id="addTaskButton"
+            class="primary-button"
+            type="button"
+        >
+            ＋ Создать заголовок задачи
+        </button>
+
+    </div>
+
+
+    <div
+        id="taskList"
+        class="list"
+    ></div>
+
+</section>
+
+
+<!-- ========================================
+     TASK MODAL
+======================================== -->
+
+<div
+    id="taskModal"
+    class="modal-overlay"
+    aria-hidden="true"
+>
+
+    <div class="modal">
+
+        <h2
+            id="taskModalTitle"
+            class="modal-title"
+        >
+            Создать заголовок задачи
+        </h2>
+
+
+        <div class="form-group">
+
+            <label
+                class="form-label"
+                for="taskText"
+            >
+                Текст задачи
+            </label>
+
+            <textarea
+                id="taskText"
+                placeholder="Введите текст задачи"
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Тип задачи
+            </label>
+
+            <div class="radio-group">
+
+                <label class="radio-label">
+
+                    <input
+                        type="radio"
+                        name="taskType"
+                        value="once"
+                        checked
+                    >
+
+                    Разовая
+
+                </label>
+
+
+                <label class="radio-label">
+
+                    <input
+                        type="radio"
+                        name="taskType"
+                        value="cyclic"
+                    >
+
+                    Циклическая
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelTaskButton"
+                class="secondary-button"
+                type="button"
+            >
+                Отмена
+            </button>
+
+            <button
+                id="saveTaskButton"
+                class="primary-button"
+                type="button"
+            >
+                Сохранить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================
+     DELETE MODAL
+======================================== -->
+
+<div
+    id="deleteModal"
+    class="modal-overlay"
+    aria-hidden="true"
+>
+
+    <div class="modal">
+
+        <h2 class="modal-title">
+            Подтверждение удаления
+        </h2>
+
+        <div class="delete-text">
+            Вы уверены, что хотите удалить эту запись?
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelDeleteButton"
+                class="secondary-button"
+                type="button"
+            >
+                Нет
+            </button>
+
+            <button
+                id="confirmDeleteButton"
+                class="danger-button"
+                type="button"
+            >
+                Да
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script
+    src="{{ url_for('static', path='js/task_titles.js') }}"
+></script>
+
+{% endblock %}

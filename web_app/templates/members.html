@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Участники — Управление Telegram-ботом{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/members.css">
+{% endblock %}
+
+{% block page_title %}
+{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <h2 class="section-title">👥 Все участники</h2>
+</div>
+
+<div id="membersList" class="list">
+    <div class="placeholder">Загрузка участников...</div>
+</div>
+
+<div
+    id="deleteModal"
+    class="modal-overlay"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="deleteModalTitle"
+>
+    <div class="modal">
+        <h2 id="deleteModalTitle" class="modal-title">
+            Подтверждение удаления
+        </h2>
+
+        <div class="delete-text">
+            Вы уверены, что хотите удалить этого участника?
+        </div>
+
+        <div class="modal-actions">
+            <button
+                id="cancelDeleteButton"
+                class="secondary-button"
+                type="button"
+            >
+                Нет
+            </button>
+
+            <button
+                id="confirmDeleteButton"
+                class="danger-button"
+                type="button"
+            >
+                Да
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/members.js"></script>
+{% endblock %}

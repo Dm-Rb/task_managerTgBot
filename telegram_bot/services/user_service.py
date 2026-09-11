@@ -23,9 +23,18 @@ class UserService:
                 )
             self.cache.set(user_)
 
-    def get_all_users(self) -> list[User] or list:
+    def get_all_users(self, dump: bool = False) -> list[User] or list:
         try:
-            return self.cache.all().values()
+            if dump:
+                return [
+                    {
+                        attribute: getattr(user, attribute)
+                        for attribute in user.__dict__
+                    }
+                    for user in self.cache.all().values()
+                ]
+            else:
+                return self.cache.all().values()
         except:
             return []
 
@@ -140,3 +149,8 @@ class UserService:
                 continue
 
         return performers
+    
+    async def remove_user(self, tg_id: int) -> bool:
+        
+        self.cache.delete(tg_id)
+        await self.database.delete(tg_id)
