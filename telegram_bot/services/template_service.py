@@ -147,14 +147,7 @@ class TemplateService(TemplateCache):
         point = await self.point_database.update(id_, point, id_device, city_id, adress_id)
         self.points[point.id] = point
         return {column.name: getattr(point, column.name) for column in point.__table__.columns}
-    
-    async def delete_city(self, id_) -> None:
-        await self.city_database.delete(id_)
-        del self.cities[id_]
-        # удаояем все адреса ассоциированные с city
         
-        return
-    
     async def delete_city(self, id_) -> None:
         # метод удаляет как саму запись в таблице, так и зависимые от city данные (adresses, points) 
         await self.city_database.delete(id_)
