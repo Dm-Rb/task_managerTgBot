@@ -25,4 +25,4 @@ async def accept_task_handler(callback: CallbackQuery, runtime_service: TaskRunt
     task = await runtime_service.accept_task(task_id)
 
 
-    await callback.answer("Функционал для этой кнопки перерабатываятся в связи с багами")
+    await callback.answer("Функционал для этой кнопки перерабатываятся")

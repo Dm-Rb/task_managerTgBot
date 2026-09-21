@@ -6,6 +6,7 @@ from telegram_bot.middlewares.ban_middleware import BanMiddleware
 from telegram_bot.callbacks.create_task.router import router as callbacks_create_task
 from telegram_bot.callbacks.update_task.router import router as callbacks_update_task
 from telegram_bot.callbacks.create_cash_collection.router import router as callbacks_create_cash_collection
+from telegram_bot.callbacks.update_cash_collection import router as callbacks_update_cash_collection
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
@@ -44,6 +45,7 @@ async def create_bot():
     dp.include_router(callbacks_create_task)
     dp.include_router(callbacks_update_task)
     dp.include_router(callbacks_create_cash_collection)
+    dp.include_router(callbacks_update_cash_collection)
 
     dp.message.middleware(BanMiddleware())
     dp.callback_query.middleware(BanMiddleware())

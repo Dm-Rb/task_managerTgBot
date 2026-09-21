@@ -4,6 +4,7 @@ from telegram_bot.callbacks.create_cash_collection.city import router as city_ro
 from telegram_bot.callbacks.create_cash_collection.submenu import router as submenu_router
 from telegram_bot.callbacks.create_cash_collection.perfomer import router as perfomer_router
 from telegram_bot.callbacks.create_cash_collection.description import router as description_router
+from telegram_bot.callbacks.create_cash_collection.create_shedule_task import router as create_sheduled_router
 
 
 router = Router()
@@ -13,3 +14,5 @@ router.include_router(city_router)
 router.include_router(submenu_router)
 router.include_router(perfomer_router)
 router.include_router(description_router)
+router.include_router(create_sheduled_router)
+

@@ -18,10 +18,10 @@ from telegram_bot.storage.task_cache import AddressTemplate
 
 async def show_cities_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
                                    template_service: TemplateService, additional_text=""):
-    """Показывает список шаблонов задач"""
-    task_tittles = await template_service.get_all_task_tittles()
+    """Показывает список доступных городов"""
 
-    text = f"{additional_text}🏢 <b>Выберите город для задач инкассации</b>"
+
+    text = f"{additional_text}🏢 <b>Выберите город</b>"
     if not template_service.cities:
         text += "\n Не доступно ни одного города."
         await message_or_callback.answer(

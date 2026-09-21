@@ -27,8 +27,8 @@ async def run():
     # Создаём Telegram + общие сервисы
     bot, dp, context = await create_bot()
 
-    # Создаём FastAPI на том же context
-    app = create_app(context)
+    # # Создаём FastAPI на том же context
+    # app = create_app(context)
 
     # Запускаем scheduler
     scheduler_task = asyncio.create_task(
@@ -39,7 +39,7 @@ async def run():
 
         await asyncio.gather(
             dp.start_polling(bot),
-            run_fastapi(app),
+            # run_fastapi(app),
         )
 
     finally:

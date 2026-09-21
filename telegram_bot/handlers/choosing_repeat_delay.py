@@ -63,7 +63,7 @@ async def choosing_cash_colletion_repeat_handler(message: Message, state: FSMCon
         text = await cash_collection_creation_message_by_state_data(state)  # формируем текст сообщения из state.get_data()
         await message.answer(
             text=text,
-            reply_markup=confirm_create_new_cash_collection("shedule_сash_collection"),  # префикс для коллбеков
+            reply_markup=confirm_create_new_cash_collection("shedule_cash_collection"),  # префикс для коллбеков
             parse_mode="HTML"
         )        
         await state.set_state(None)
