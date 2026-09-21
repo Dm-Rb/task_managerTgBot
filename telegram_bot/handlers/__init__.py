@@ -1,0 +1,35 @@
+"""Единый роутер всех handlers."""
+
+from aiogram import Router
+
+from . import (
+    start_auth,
+    logout,
+    group_events,
+    menu,
+    media_handler,
+    comment_comple_handler,
+    address_template,
+    group_topic,
+    choosing_repeat_delay,
+    get_report,
+    title_desription,
+    documents
+)
+
+
+router = Router()
+
+
+router.include_router(group_events.router)
+router.include_router(start_auth.router)
+router.include_router(logout.router)
+router.include_router(title_desription.router)
+router.include_router(menu.router)
+router.include_router(media_handler.router)
+router.include_router(comment_comple_handler.router)
+router.include_router(address_template.router)
+router.include_router(group_topic.router)
+router.include_router(choosing_repeat_delay.router)
+router.include_router(get_report.router)
+router.include_router(documents.router)

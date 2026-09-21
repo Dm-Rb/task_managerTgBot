@@ -10,7 +10,7 @@ async def run_fastapi(app):
     config = uvicorn.Config(
         app,
         host="127.0.0.1",
-        port=8000,
+        port=8001,
         loop="asyncio",
     )
 

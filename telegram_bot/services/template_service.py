@@ -37,7 +37,7 @@ class TemplateService(TemplateCache):
         self.adreses: dict[int, AdressTable] = {item.id: item for item in adreses}
         self.points: dict[int, PointTable] = {item.id: item for item in points}
         # Формируем строки из city + adress
-        self.adress_templates = [f"{item.adress}, {self.cities[item.city_id]}" for item in adreses]
+        self.adress_templates = [f"{item.adress}, {self.cities[item.city_id].city}" for item in adreses]
 
         return
     
@@ -176,4 +176,11 @@ class TemplateService(TemplateCache):
         # удаляем кеши
         del self.points[id_]
         return
+    
+    def get_points_by_city_id(self, city_id) -> list[PointTable]:
+        result = []
+        for k in self.points.keys():
+            if self.points[k].city_id == city_id:
+                result.append(self.points[k])
+        return result
     

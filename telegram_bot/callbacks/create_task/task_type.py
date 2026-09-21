@@ -11,7 +11,7 @@ router = Router()
 
 
 @router.callback_query(F.data.startswith("task_type:recurring"))
-async def task_type_select_once_handler(callback: CallbackQuery, state: FSMContext):
+async def task_type_recurring(callback: CallbackQuery, state: FSMContext):
     await state.update_data(task_type=TaskType.RECURRING.value)
 
     await show_selected(callback, state, 'recurring')  # делегируем отображение в flow
@@ -25,7 +25,7 @@ async def task_type_select_once_handler(callback: CallbackQuery, state: FSMConte
 
 
 @router.callback_query(F.data.startswith("recurring:back"))
-async def task_type_select_once_handler(callback: CallbackQuery, state: FSMContext):
+async def task_type_select_once_back(callback: CallbackQuery, state: FSMContext):
     await show_task_type_selection(callback, state)
     await callback.answer()
 
@@ -46,7 +46,7 @@ async def recurrence_task_repeat_handler(callback: CallbackQuery, state: FSMCont
 
 
 @router.callback_query(F.data.startswith("task_type:once"))
-async def task_type_select_once_handler(callback: CallbackQuery, state: FSMContext):
+async def task_type_select_once_handler_(callback: CallbackQuery, state: FSMContext):
     await state.update_data(task_type=TaskType.ONCE.value)
     await show_delay_hours_selection(callback, state)
     await callback.answer()

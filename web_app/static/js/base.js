@@ -279,3 +279,52 @@ function openMenu(
     button.classList.add("active");
 }
 
+/* Выход */
+
+const logoutButton  = document.getElementById("logoutButton");
+const logoutModal   = document.getElementById("logoutModal");
+const logoutCancel  = document.getElementById("logoutCancel");
+const logoutConfirm = document.getElementById("logoutConfirm");
+
+const openLogoutModal  = () => logoutModal.classList.add("show");
+const closeLogoutModal = () => logoutModal.classList.remove("show");
+
+logoutButton?.addEventListener("click", openLogoutModal);
+logoutCancel?.addEventListener("click", closeLogoutModal);
+
+// Клик по затемнённому фону закрывает окно
+logoutModal?.addEventListener("click", (event) => {
+    if (event.target === logoutModal) {
+        closeLogoutModal();
+    }
+});
+
+// Esc закрывает окно
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        closeLogoutModal();
+    }
+});
+
+logoutConfirm?.addEventListener("click", async () => {
+
+    logoutConfirm.disabled = true;
+
+    try {
+        const response = await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        window.location.href = "/login";
+
+    } catch (error) {
+        console.error("Ошибка выхода:", error);
+        alert("Не удалось выйти. Попробуйте ещё раз.");
+        logoutConfirm.disabled = false;
+    }
+});

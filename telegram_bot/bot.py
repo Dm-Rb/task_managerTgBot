@@ -1,10 +1,11 @@
 from core.config import settings
 from core.app_context import AppContext
 
-from telegram_bot.handlers.router import router as handlers_router
+from telegram_bot.handlers import router as handlers_router
 from telegram_bot.middlewares.ban_middleware import BanMiddleware
 from telegram_bot.callbacks.create_task.router import router as callbacks_create_task
 from telegram_bot.callbacks.update_task.router import router as callbacks_update_task
+from telegram_bot.callbacks.create_cash_collection.router import router as callbacks_create_cash_collection
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
@@ -37,10 +38,12 @@ async def create_bot():
     dp["task_service"] = context.task_service
     dp["template_service"] = context.template_service
     dp["runtime_service"] = context.runtime_service
+    dp["cash_collection_service"] = context.cash_collection_service
 
     dp.include_router(handlers_router)
     dp.include_router(callbacks_create_task)
     dp.include_router(callbacks_update_task)
+    dp.include_router(callbacks_create_cash_collection)
 
     dp.message.middleware(BanMiddleware())
     dp.callback_query.middleware(BanMiddleware())

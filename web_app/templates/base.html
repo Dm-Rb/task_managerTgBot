@@ -21,164 +21,187 @@
 
     <aside class="sidebar">
 
-        <div class="logo">
-            <span class="logo-icon">🤖</span>
-            <span class="logo-text">Управление ботом</span>
-        </div>
+        <div class="sidebar-menu">
+
+            <div class="logo">
+                <span class="logo-icon">⚙️</span>
+                <span class="logo-text">Админ-панель</span>
+            </div>
 
 
-        <!-- TELEGRAM -->
+            <!-- TELEGRAM -->
 
-        <div class="menu-item">
-
-            <button
-                id="telegramMenuButton"
-                class="menu-button"
-                type="button"
-            >
-                <span class="menu-icon">🤖</span>
-
-                <span class="menu-text">
-                    Управление Telegram-ботом
-                </span>
-
-                <span class="menu-arrow">
-                    ⌄
-                </span>
-            </button>
-
-
-            <div
-                id="telegramSubmenu"
-                class="submenu"
-            >
+            <div class="menu-item">
 
                 <button
-                    id="menuTasks"
-                    class="submenu-button"
+                    id="telegramMenuButton"
+                    class="menu-button"
                     type="button"
-                    data-section="tasks"
                 >
-                    📝 Заголовки задач
+                    <span class="menu-icon">🤖</span>
+
+                    <span class="menu-text">
+                        Управление Telegram-ботом
+                    </span>
+
+                    <span class="menu-arrow">
+                        ⌄
+                    </span>
                 </button>
 
-                <button
-                    id="menuMembers"
-                    class="submenu-button"
-                    type="button"
-                    data-section="members"
+
+                <div
+                    id="telegramSubmenu"
+                    class="submenu"
                 >
-                    👥 Участники
-                </button>
+
+                    <button
+                        id="menuTasks"
+                        class="submenu-button"
+                        type="button"
+                        data-section="tasks"
+                    >
+                        📝 Заголовки задач
+                    </button>
+
+                    <button
+                        id="menuMembers"
+                        class="submenu-button"
+                        type="button"
+                        data-section="members"
+                    >
+                        👥 Участники
+                    </button>
+
+                    <button
+                        id="menuPoints"
+                        class="submenu-button"
+                        type="button"
+                        data-section="points"
+                    >
+                        📍 Точки
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- TELEPHONY -->
+
+            <div class="menu-item">
 
                 <button
-                    id="menuPoints"
-                    class="submenu-button"
+                    id="telephonyMenuButton"
+                    class="menu-button"
                     type="button"
-                    data-section="points"
                 >
-                    📍 Точки
+                    <span class="menu-icon">📞</span>
+
+                    <span class="menu-text">
+                        Телефония
+                    </span>
+
+                    <span class="menu-arrow">
+                        ⌄
+                    </span>
                 </button>
+
+
+                <div
+                    id="telephonySubmenu"
+                    class="submenu hidden"
+                >
+
+                    <button
+                        id="menuTelephonyDetails"
+                        class="submenu-button"
+                        type="button"
+                        data-section="telephony-details"
+                    >
+                        ☎️ Детализация
+                    </button>
+
+                    <button
+                        id="menuTelephonySettings"
+                        class="submenu-button"
+                        type="button"
+                        data-section="telephony-settings"
+                    >
+                        ⚙️ Настройки
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- SMS -->
+
+            <div class="menu-item">
+
+                <button
+                    id="smsMenuButton"
+                    class="menu-button"
+                    type="button"
+                >
+                    <span class="menu-icon">💬</span>
+
+                    <span class="menu-text">
+                        СМС
+                    </span>
+
+                    <span class="menu-arrow">
+                        ⌄
+                    </span>
+                </button>
+
+
+                <div
+                    id="smsSubmenu"
+                    class="submenu hidden"
+                >
+
+                    <button
+                        id="menuSmsDetails"
+                        class="submenu-button"
+                        type="button"
+                        data-section="sms-details"
+                    >
+                        💬 Детализация
+                    </button>
+
+                    <button
+                        id="menuSmsSettings"
+                        class="submenu-button"
+                        type="button"
+                        data-section="sms-settings"
+                    >
+                        ⚙️ Настройки
+                    </button>
+
+                </div>
 
             </div>
 
         </div>
 
 
-        <!-- TELEPHONY -->
+        <!-- LOGOUT -->
 
-        <div class="menu-item">
+        <div class="sidebar-footer">
 
             <button
-                id="telephonyMenuButton"
+                id="logoutButton"
                 class="menu-button"
                 type="button"
             >
-                <span class="menu-icon">📞</span>
+                <span class="menu-icon">🚪</span>
 
                 <span class="menu-text">
-                    Телефония
-                </span>
-
-                <span class="menu-arrow">
-                    ⌄
+                    Выход
                 </span>
             </button>
-
-
-            <div
-                id="telephonySubmenu"
-                class="submenu hidden"
-            >
-
-                <button
-                    id="menuTelephonyDetails"
-                    class="submenu-button"
-                    type="button"
-                    data-section="telephony-details"
-                >
-                    ☎️ Детализация
-                </button>
-
-                <button
-                    id="menuTelephonySettings"
-                    class="submenu-button"
-                    type="button"
-                    data-section="telephony-settings"
-                >
-                    ⚙️ Настройки
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- SMS -->
-
-        <div class="menu-item">
-
-            <button
-                id="smsMenuButton"
-                class="menu-button"
-                type="button"
-            >
-                <span class="menu-icon">💬</span>
-
-                <span class="menu-text">
-                    СМС
-                </span>
-
-                <span class="menu-arrow">
-                    ⌄
-                </span>
-            </button>
-
-
-            <div
-                id="smsSubmenu"
-                class="submenu hidden"
-            >
-
-                <button
-                    id="menuSmsDetails"
-                    class="submenu-button"
-                    type="button"
-                    data-section="sms-details"
-                >
-                    💬 Детализация
-                </button>
-
-                <button
-                    id="menuSmsSettings"
-                    class="submenu-button"
-                    type="button"
-                    data-section="sms-settings"
-                >
-                    ⚙️ Настройки
-                </button>
-
-            </div>
 
         </div>
 
@@ -200,6 +223,45 @@
         </div>
 
     </main>
+
+</div>
+
+
+<!-- LOGOUT MODAL -->
+
+<div id="logoutModal" class="modal-overlay">
+
+    <div class="modal">
+
+        <h2 class="modal-title">
+            Выход
+        </h2>
+
+        <p class="delete-text">
+            Вы действительно хотите выйти из админ-панели?
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                id="logoutCancel"
+                class="secondary-button"
+                type="button"
+            >
+                Отмена
+            </button>
+
+            <button
+                id="logoutConfirm"
+                class="danger-button"
+                type="button"
+            >
+                Выйти
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 

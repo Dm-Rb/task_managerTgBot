@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.exceptions import HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from core.app_context import AppContext
@@ -17,8 +19,7 @@ from web_app.routes.users import router as users_router
 from web_app.routes.points import router as points_router
 
 
-
-
+templates = Jinja2Templates(directory="web_app/templates")
 
 
 def create_app(context: AppContext):
@@ -43,7 +44,16 @@ def create_app(context: AppContext):
     app.include_router(api_users_router)
     app.include_router(points_router)
     app.include_router(api_points_router)
-    
+
+    @app.exception_handler(404)
+    async def not_found_handler(request: Request, exc: HTTPException):
+        return templates.TemplateResponse(
+            request=request,
+            name="404.html",
+            context={
+                "active_section": "404"
+            }
+        )
 
     app.mount(
         "/static",

@@ -38,3 +38,8 @@ class CompleteTaskStates(StatesGroup):  # FSM для логического бо
     
     waiting_media = State()
     waiting_comment = State()
+    
+class CreateСashColletionStates(StatesGroup):  # FSM для логического бока create_task
+
+    waiting_description = State()  
+    choosing_repeat = State()  

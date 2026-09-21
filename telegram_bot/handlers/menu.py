@@ -1,9 +1,5 @@
-
-
 from telegram_bot.keyboards.menu import main_menu_keyboard
-
 from telegram_bot.states import CreateTaskStates  # FSM
-
 from telegram_bot.flows.create_task import show_tittles_selection
 from aiogram import Router, F
 from aiogram.types import Message
@@ -11,7 +7,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from telegram_bot.keyboards.logout import logout_keyboard
-
+from telegram_bot.keyboards.cash_collection import cash_collection_submenu_keyboard
 
 router = Router()
 
@@ -72,7 +68,7 @@ async def show_tasks_button(message: Message, runtime_service, user_service):
     await runtime_service.send_tasks_to_performer(message.from_user.id)
 
 @router.message(F.text == "🗓 Список всех активных задач")
-async def show_all_tasks_button(message: Message, runtime_service, user_service):
+async def show_all_sheduler_tasks(message: Message, runtime_service, user_service):
     user = user_service.cache.get(message.from_user.id)
     if user.role != 2:
         return
@@ -110,3 +106,21 @@ async def logout_start(message: Message, user_service, state: FSMContext):
         "Вы действительно хотите разлогиниться?",
         reply_markup=await logout_keyboard()
     )
+
+@router.message(Command("show_tasks"))
+async def show_tasks(message: Message, runtime_service, user_service):
+    """комманда /show_tasks дублирует "📋 Мои задачи" """
+    await show_tasks_button(message, runtime_service, user_service)
+
+@router.message(F.text == "💰 Инкассация")
+async def show_cashcollection_buttons(message: Message, user_service):
+    user = user_service.cache.get(message.from_user.id)
+    if user.role == 1:
+        return #!!!! для исполнителя отдельная логика, добавить тут
+    elif user.role == 2:
+        await message.answer(
+        text="💰 Инкассация:",
+        reply_markup=cash_collection_submenu_keyboard()
+    )
+    else:
+        return

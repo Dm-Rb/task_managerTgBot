@@ -1,6 +1,6 @@
 from aiogram.fsm.context import FSMContext
 from telegram_bot.models.task import Task
-
+import datetime
 
 async def get_task_creation_message_by_state_data(state: FSMContext) -> str:
     """
@@ -254,8 +254,11 @@ async def get_schedule_task_creation_message_by_state_data(state: FSMContext) ->
 
     if task_type := data.get("every_n_days"):
         lines.append(f"<b>Повторяется раз в:</b> <i>{str(task_type)} дней</i>")
-    else:
-        lines.append(f"<b>Отложенный запуск задачи в:</b> <i>{str(data.get('next_run_at'))}</i>")
+    
+    if task_type  := data.get("delay_hours"):  # одноразовая задача с отложенным запуском
+        created_at = datetime.datetime.now().replace(second=0, microsecond=0)
+        next_run_at = created_at + datetime.timedelta(hours=data['delay_hours'])
+        lines.append(f"<b>Отложенный запуск задачи в:</b> <i>{str(next_run_at)}</i>")
     return "\n".join(lines)
 
 

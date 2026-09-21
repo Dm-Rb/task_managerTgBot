@@ -35,10 +35,11 @@ async def create_new_task(callback: CallbackQuery, state: FSMContext,
         address=state_data.get('address', None),
         file_id=state_data.get('file_id', None)
             )
-    await runtime_service.register_new_task(task) # передаём объект в runtime_service для рассылки уведомлений
+    
     await callback.message.delete()
     await callback.answer("✅ Задача создана")
     await state.clear()
+    await runtime_service.register_new_task(task) # передаём объект в runtime_service для рассылки уведомлений
 
 
 @router.callback_query(F.data.startswith("new_task:cancel"))
