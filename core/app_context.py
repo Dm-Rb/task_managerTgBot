@@ -89,4 +89,6 @@ class AppContext:
         await self.group_service.warm_up()
         await self.task_service.warmup()
         await self.template_service.warmup()
+        await self.cash_collection_service.warmup()
+    
 

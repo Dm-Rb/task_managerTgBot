@@ -14,7 +14,7 @@ from telegram_bot.services.cash_collection_service import CashCollectionService
 router = Router()
 
 
-@router.callback_query(F.data.startswith("cash_collection_cities:page:"))
+@router.callback_query(F.data.startswith("cash_collection_cities_create:page:"))
 async def cash_collection_cities_pagination(callback: CallbackQuery, template_service: TemplateService):
     """Пагинация шаблонов с городами"""
     try:
@@ -24,13 +24,13 @@ async def cash_collection_cities_pagination(callback: CallbackQuery, template_se
         return
 
     await callback.message.edit_reply_markup(
-        reply_markup=cities_keyboard(template_service.cities, page=page)
+        reply_markup=cities_keyboard(template_service.cities, "cash_collection_cities_create", page=page)
     )
 
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("cash_collection_cities:select:"))
+@router.callback_query(F.data.startswith("cash_collection_cities_create:select:"))
 async def cash_collection_cities_select(callback: CallbackQuery,  
                                         state: FSMContext, 
                                         template_service: TemplateService,
@@ -70,17 +70,17 @@ async def cash_collection_cities_select(callback: CallbackQuery,
     message_ = await cash_collection_creation_message_by_state_data(state)
     await callback.message.edit_text(
         text=message_,
-        reply_markup=confirm_or_back_keyboard("cash_collection_cities", None), 
+        reply_markup=confirm_or_back_keyboard("cash_collection_cities_create", None), 
         parse_mode="HTML"
     )
     
 
-@router.callback_query(F.data.startswith("cash_collection_cities:back"))
+@router.callback_query(F.data.startswith("cash_collection_cities_create:back"))
 async def cash_collection_cities_back(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
-    await show_cities_selection(callback, state, template_service)
+    await show_cities_selection(callback, state, template_service, "cash_collection_cities_create")
     
     
-@router.callback_query(F.data.startswith("cash_collection_cities:continue"))
+@router.callback_query(F.data.startswith("cash_collection_cities_create:continue"))
 async def cash_collection_cities_continue(callback: CallbackQuery, user_service: UserService):
     performers = user_service.get_performers(callback.from_user.id)
     await show_performer_selection(callback, performers)

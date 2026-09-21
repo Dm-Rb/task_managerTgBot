@@ -11,6 +11,28 @@ class CashCollectionService(CashCollectionCache):
     def __init__(self, sheduled_cash_collection_database):
         self.sheduled_database = sheduled_cash_collection_database
         
+    async def warmup(self):
+        db_tasks = await self.sheduled_database.get_all()
+
+        self.sheduled_tasks = {
+            db_task.id: ScheduledCashCollectionTask(
+                id=db_task.id,
+                city_id=db_task.city_id,
+                city=db_task.city,
+                description=db_task.description,
+                creator_id=db_task.creator_id,
+                creator_name=db_task.creator_name,
+                performer_id=db_task.performer_id,
+                performer_name=db_task.performer_name,
+                created_at=db_task.created_at,
+                every_n_days=db_task.every_n_days,
+                next_run_at=db_task.next_run_at,
+            )
+            for db_task in db_tasks
+        }
+        return
+    
+        
     async def create_shedule_task(self, 
                               city_id: int,
                               city: str,
@@ -45,5 +67,10 @@ class CashCollectionService(CashCollectionCache):
     
     async def get_shedule_tasks(self)->list[ScheduledCashCollectionTask]:        
         return list(self.sheduled_tasks.values())
+    
+    async def remove_shedule_task_by_id(self, shedule_task_id)->list[ScheduledCashCollectionTask]:        
+        del self.sheduled_tasks[shedule_task_id]
+        await self.sheduled_database.delete(shedule_task_id)
+        return
     
     

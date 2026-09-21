@@ -17,7 +17,7 @@ from telegram_bot.storage.task_cache import AddressTemplate
 
 
 async def show_cities_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
-                                   template_service: TemplateService, additional_text=""):
+                                   template_service: TemplateService, callback_prefix: str, additional_text=""):
     """Показывает список доступных городов"""
 
 
@@ -30,7 +30,7 @@ async def show_cities_selection(message_or_callback: CallbackQuery or Message, s
                 )
         await state.clear()
         return
-    keyboard = keyboards.cities_keyboard(template_service.cities)
+    keyboard = keyboards.cities_keyboard(template_service.cities, callback_prefix)
 
     if isinstance(message_or_callback, Message): 
         await message_or_callback.answer(

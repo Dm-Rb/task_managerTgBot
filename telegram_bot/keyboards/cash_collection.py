@@ -29,7 +29,7 @@ def cash_collection_submenu_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def cities_keyboard(cities: dict[int, CityTable], page: int = 0) -> InlineKeyboardMarkup:
+def cities_keyboard(cities: dict[int, CityTable], callback_prefix: str, page: int = 0) -> InlineKeyboardMarkup:
 
     builder = InlineKeyboardBuilder()
 
@@ -42,7 +42,7 @@ def cities_keyboard(cities: dict[int, CityTable], page: int = 0) -> InlineKeyboa
     for city_key in current_cities_keys:
         builder.button(
             text=cities[city_key].city,
-            callback_data=f"cash_collection_cities:select:{str(city_key)}"
+            callback_data=f"{callback_prefix}:select:{str(city_key)}"
         )
 
     # пагинация
@@ -50,12 +50,12 @@ def cities_keyboard(cities: dict[int, CityTable], page: int = 0) -> InlineKeyboa
 
     if page > 0:
         nav_buttons.append(
-            ("⬅️", f"cash_collection_cities:page:{page - 1}")
+            ("⬅️", f"{callback_prefix}:page:{page - 1}")
         )
 
     if end < len(list(cities.keys())):
         nav_buttons.append(
-            ("➡️", f"cash_collection_cities:page:{page + 1}")
+            ("➡️", f"{callback_prefix}:page:{page + 1}")
         )
 
     for text, callback_data in nav_buttons:
@@ -111,4 +111,31 @@ def confirm_create_new_cash_collection(prefix: str) -> InlineKeyboardMarkup:
     )
     builder.adjust(2)
 
+    return builder.as_markup()
+
+def remove_shedule_task(shedule_task_id: str) -> InlineKeyboardMarkup:
+    """Подтверждение или Отмена создания задачи инкассации"""
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="❌ Удалить конфигурацию",
+        callback_data=f"cash_collection_shedule_task:ask_cnf_rm:{shedule_task_id}"
+    )
+    builder.adjust(2)
+
+    return builder.as_markup()
+
+def confirm_keyboard(action: str, object_id: str) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    builder.button(
+        text="✅ Да",
+        callback_data=f"{action}:{object_id}:yes"
+    )
+
+    builder.button(
+        text="❌ Нет",
+        callback_data=f"{action}:{object_id}:no"
+    )
+
+    builder.adjust(2)
     return builder.as_markup()
