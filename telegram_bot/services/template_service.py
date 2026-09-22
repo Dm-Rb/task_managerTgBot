@@ -84,9 +84,11 @@ class TemplateService(TemplateCache):
     
     async def get_all_adress_templates(self) -> list:
         if not self.adress_templates:
-            cities: dict = {item.id: item.city for item in self.city_database.get_all()}
+            cities_db = await self.city_database.get_all()
+            cities: dict = {item.id: item.city for item in cities_db}
             # Далее записываем в кеш строки типа "city, adress"
-            self.adress_templates = [f"{item.adress}, {cities[item.city_id]}" for item in self.adress_database.get_all()]
+            adresses_db = await self.adress_database.get_all()
+            self.adress_templates = [f"{item.adress}, {cities[item.city_id]}" for item in adresses_db]
         return self.adress_templates
     
     async def add_adress_templates(self, adress: str) -> None:
