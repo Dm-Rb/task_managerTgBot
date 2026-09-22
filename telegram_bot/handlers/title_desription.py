@@ -6,13 +6,14 @@ from telegram_bot.flows.create_task import show_tittles_selection
 from telegram_bot.messages.task import get_task_creation_message_by_state_data
 from telegram_bot.keyboards import create_task as keyboards
 from telegram_bot.messages.cash_collection import cash_collection_creation_message_by_state_data
+from telegram_bot.services.template_service import TemplateService
 
 
 router = Router()
 
 
 @router.message(CreateTaskStates.waiting_template_title)
-async def template_title_handler(message: Message, state: FSMContext, template_service):
+async def template_title_handler(message: Message, state: FSMContext, template_service: TemplateService):
     if message.text.startswith('/'):
         await state.clear()
         await message.answer('Отменено')
@@ -21,7 +22,7 @@ async def template_title_handler(message: Message, state: FSMContext, template_s
     # записываем в фсм титульник нового шаблона
     await state.update_data(template_title=message.text)
     # добавить в кеш
-    await template_service.add_task_tittle(message.text, False)
+    await template_service.create_new_task_tittle(message.text, False)
     # отобразить обновлённую конструкцию
     await show_tittles_selection(message, state, template_service)
     # удалить состояние reateTaskStates.waiting_template_description при  этом сохранив остальные данные
