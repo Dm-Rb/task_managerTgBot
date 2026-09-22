@@ -15,5 +15,7 @@ class Config:
     USER_PSW = os.getenv("USER_PASSWORD")
     MAX_ATTS_PSW = int(os.getenv("MAX_ATTEMPTS_PASSWORD"))
     DATABASE_URL = os.getenv("DATABASE_URL")
+    HOST = os.getenv("HOST")
+    PORT = os.getenv("PORT")
 
 settings = Config()
