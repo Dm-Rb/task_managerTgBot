@@ -5,13 +5,12 @@ from telegram_bot.bot import create_bot
 from web_app.app import create_app
 from core.config import settings
 
-
 async def run_fastapi(app):
 
     config = uvicorn.Config(
         app,
         host=settings.HOST,
-        port=settings.PORT,
+        port=int(settings.PORT),
         loop="asyncio",
     )
 
