@@ -47,7 +47,7 @@ async def cash_collection_cities_select(callback: CallbackQuery,
     if exist_scheduler_task:
         await state.clear()
         await callback.message.edit_text(
-        text=f"Для города {template_service.cities[city_key].city} уже создана конфигурация автоматического создания задач по инкассации",
+        text=f"Для города {template_service.cities[city_key].city} уже создана конфигурация автоматического создания задач по инкассации\n/menu",
         reply_markup=None
         )
         return
@@ -81,9 +81,9 @@ async def cash_collection_cities_back(callback: CallbackQuery, state: FSMContext
     
     
 @router.callback_query(F.data.startswith("cash_collection_cities_create:continue"))
-async def cash_collection_cities_continue(callback: CallbackQuery, user_service: UserService):
+async def cash_collection_cities_continue(callback: CallbackQuery, user_service: UserService, state: FSMContext):
     performers = user_service.get_performers(callback.from_user.id)
-    await show_performer_selection(callback, performers)
+    await show_performer_selection(callback, state, performers)
     
 async def is_exist_scheduler_task_by_city_id(cash_collection_service: CashCollectionService, city_id: int)->bool:
     """Вспомогательная функция. Проверяет все существующие конфигурации задач инкассации в кеше 

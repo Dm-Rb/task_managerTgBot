@@ -60,6 +60,7 @@ async def cash_collection_description_handler(message: Message, state: FSMContex
                             )
     # Показывает сообщение с текущим выбором + кнопки назад\подтвердить
     message_ = await cash_collection_creation_message_by_state_data(state)
+    message_ += ""
     await message.answer(
         text=message_,
         reply_markup=keyboards.confirm_or_back_keyboard("сash_collection_description"),  # префикс для коллбеков

@@ -56,11 +56,11 @@ def main_menu_keyboard(
             text="📋 Мои задачи"
         )
     ])
-    # keyboard.append([
-    #     KeyboardButton(
-    #         text="💰 Инкассация"
-    #     )
-    # ])
+    keyboard.append([
+        KeyboardButton(
+            text="💰 Инкассация"
+        )
+    ])
     
     keyboard.append([
         KeyboardButton(

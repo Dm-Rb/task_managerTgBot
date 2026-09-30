@@ -32,7 +32,7 @@ async def сash_collection_description_continue(callback: CallbackQuery, state: 
     
     # отправляем новое сообщение
     await callback.message.answer(
-        "Введите интервал (чмсло дней) через который задача будет пересоздаваться автоматически 👇🏻"
+        "Введите интервал (число дней) через который задача будет пересоздаваться автоматически 👇🏻"
     )
     await state.set_state(CreateСashColletionStates.choosing_repeat)
     

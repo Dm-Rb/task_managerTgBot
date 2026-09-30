@@ -8,7 +8,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from telegram_bot.keyboards.logout import logout_keyboard
 from telegram_bot.keyboards.cash_collection import cash_collection_submenu_keyboard
-
+from telegram_bot.services.cash_collection_runtime_service import CashCollectionRuntimeService
+from telegram_bot.services.user_service import UserService
 router = Router()
 
 
@@ -24,6 +25,14 @@ async def show_tasks_handler(message: Message, user_service, state: FSMContext):
     await message.answer(text='Выберите пункт меню из списка:', reply_markup=main_menu_keyboard(user.role))
 
     await state.clear()
+
+@router.message(Command("cancel"))
+async def cancel_handler(message: Message, state: FSMContext):
+    """Сброс текущего состояния и всех данных FSM"""
+
+    await state.clear()
+    await message.answer("Действие отменено")
+
 
 @router.message(F.text == "➕ Создать новую задачу")
 async def create_new_task_handler(message: Message, state: FSMContext, template_service, user_service):
@@ -62,13 +71,13 @@ async def create_new_scheduler_task_handler(message: Message, state: FSMContext,
 
 
 @router.message(F.text == "📋 Мои задачи")
-async def show_tasks_button(message: Message, runtime_service, user_service):
+async def show_tasks_performer(message: Message, runtime_service, user_service):
     text = "📝 <b>Список ваших активных задач:</b>"
     await message.answer(text=text, parse_mode='HTML')
     await runtime_service.send_tasks_to_performer(message.from_user.id)
 
 @router.message(F.text == "🗓 Список всех активных задач")
-async def show_all_sheduler_tasks(message: Message, runtime_service, user_service):
+async def show_tasks_admin(message: Message, runtime_service, user_service):
     user = user_service.cache.get(message.from_user.id)
     if user.role != 2:
         return
@@ -79,7 +88,7 @@ async def show_all_sheduler_tasks(message: Message, runtime_service, user_servic
 
 
 @router.message(F.text == "📆 Список шаблонов задач по-расписанию")
-async def show_all_tasks_button(message: Message, runtime_service, user_service):
+async def show_shedule_tasks(message: Message, runtime_service, user_service):
     user = user_service.cache.get(message.from_user.id)
     if user.role != 2:
         return
@@ -108,17 +117,33 @@ async def logout_start(message: Message, user_service, state: FSMContext):
     )
 
 @router.message(Command("show_tasks"))
-async def show_tasks(message: Message, runtime_service, user_service):
+async def show_tasks(message: Message, runtime_service, user_service: UserService):
     """комманда /show_tasks дублирует "📋 Мои задачи" """
-    await show_tasks_button(message, runtime_service, user_service)
-
-@router.message(F.text == "💰 Инкассация")
-async def show_cashcollection_buttons(message: Message, user_service):
     user = user_service.cache.get(message.from_user.id)
     if user.role == 1:
-        return #!!!! для исполнителя отдельная логика, добавить тут
+        await show_tasks_performer(message, runtime_service, user_service)
     elif user.role == 2:
-        await message.answer(
+        await show_tasks_admin(message, runtime_service, user_service)
+    
+@router.message(Command("show_cash_tasks"))
+async def show_cash_collection_tasks(message: Message, cash_collection_runtime_service: CashCollectionRuntimeService, user_service):
+    user = user_service.cache.get(message.from_user.id)
+    if not user:
+        return
+        
+    if user.role == 2:
+        return await cash_collection_runtime_service.get_all_tasks_for_creator(message.from_user.id) 
+    elif user.role == 1:
+        return await cash_collection_runtime_service.get_all_tasks_for_perfomer(message.from_user.id)  
+
+
+@router.message(F.text == "💰 Инкассация")
+async def show_cashcollection_buttons(message: Message, user_service, cash_collection_runtime_service: CashCollectionRuntimeService):
+    user = user_service.cache.get(message.from_user.id)
+    if user.role == 1:
+        return await cash_collection_runtime_service.get_all_tasks_for_perfomer(message.from_user.id)
+    elif user.role == 2:
+        return await message.answer(
         text="💰 Инкассация:",
         reply_markup=cash_collection_submenu_keyboard()
     )

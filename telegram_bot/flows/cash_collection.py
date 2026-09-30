@@ -22,35 +22,42 @@ async def show_cities_selection(message_or_callback: CallbackQuery or Message, s
 
 
     text = f"{additional_text}🏢 <b>Выберите город</b>"
-    if not template_service.cities:
-        text += "\n Не доступно ни одного города."
-        await message_or_callback.answer(
-                    text,
-                    parse_mode="HTML"
-                )
-        await state.clear()
-        return
     keyboard = keyboards.cities_keyboard(template_service.cities, callback_prefix)
 
     if isinstance(message_or_callback, Message): 
+        if not template_service.cities:
+            await state.clear()
+            text = "Не доступно ни одного города. Создайте новые записи через панель управления в браузере"
+            keyboard = None
         await message_or_callback.answer(
             text,
             reply_markup=keyboard,
             parse_mode="HTML"
         )
     else:  # нажатие на инлайн кнопку
+        if not template_service.cities:
+            await state.clear()
+            return await message_or_callback.answer("Не доступно ни одного города. Создайте новые записи через панель управления в браузере", show_alert=True)
+            
         await message_or_callback.message.edit_text(
             text,
             reply_markup=keyboard,
             parse_mode="HTML"
         )
         
-async def show_performer_selection(callback: CallbackQuery, performers: list):
+async def show_performer_selection(callback: CallbackQuery, state: FSMContext, performers: list):
     """Показываем выбор исполнителя"""
-
-    await callback.message.edit_text(
-        text=f"👨🏼‍💼 <b>Выберите исполнителя:</b>",
-        reply_markup=performers_keyboard(performers),
+    if performers_keyboard(performers):
+        await callback.message.edit_text(
+            text=f"👨🏼‍💼 <b>Выберите исполнителя:</b>",
+            reply_markup=performers_keyboard(performers),
+            parse_mode="HTML"
+        )
+    else:
+        await callback.message.edit_text(
+        text=f"<b>Нет ни одного исполнителя в списке пользователей бота\n/menu</b>",
+        reply_markup=None,
         parse_mode="HTML"
     )
+        await state.clear()
 

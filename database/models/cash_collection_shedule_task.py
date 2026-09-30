@@ -7,8 +7,8 @@ from database.base import Base
 
 
 
-class ScheduledCashCollectionTable(Base):
-    __tablename__ = "scheduled_cash_collection"
+class CashCollectionSheduleTaskTable(Base):
+    __tablename__ = "cash_collection_schedule_task"
 
 
     id: Mapped[str] = mapped_column(String, primary_key=True)

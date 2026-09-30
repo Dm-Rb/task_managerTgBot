@@ -1,26 +1,25 @@
 from sqlalchemy import delete, select
 
 from database.session import AsyncSessionLocal
-from database.models.sheduled_cash_collection import ScheduledCashCollectionTable
+from database.models.cash_collection_shedule_task import CashCollectionSheduleTaskTable
 from telegram_bot.models.cash_collection_task import ScheduledCashCollectionTask
 
 
-class ScheduledCashCollectionRepository:
+class CashCollectionScheduleTaskRepository:
 
-    async def upsert(self, task: ScheduledCashCollectionTask) -> ScheduledCashCollectionTable:
-
+    async def upsert(self, task: ScheduledCashCollectionTask) -> CashCollectionSheduleTaskTable:
+        
         async with AsyncSessionLocal() as session:
 
             result = await session.execute(
-                select(ScheduledCashCollectionTable).where(
-                    ScheduledCashCollectionTable.id == task.id
+                select(CashCollectionSheduleTaskTable).where(
+                    CashCollectionSheduleTaskTable.id == task.id
                 )
             )
 
             db_task = result.scalar_one_or_none()
 
             # UPDATE
-
             if db_task:
 
                 db_task.city_id = task.city_id
@@ -40,10 +39,9 @@ class ScheduledCashCollectionRepository:
                 db_task.next_run_at = task.next_run_at
 
             # CREATE
-
             else:
 
-                db_task = ScheduledCashCollectionTable(
+                db_task = CashCollectionSheduleTaskTable(
 
                     id=task.id,
 
@@ -75,31 +73,31 @@ class ScheduledCashCollectionRepository:
         async with AsyncSessionLocal() as session:
 
             await session.execute(
-                delete(ScheduledCashCollectionTable).where(
-                    ScheduledCashCollectionTable.id == task_id
+                delete(CashCollectionSheduleTaskTable).where(
+                    CashCollectionSheduleTaskTable.id == task_id
                 )
             )
 
             await session.commit()
 
-    async def get_by_id(self, task_id: str) -> ScheduledCashCollectionTable | None:
+    async def get_by_id(self, task_id: str) -> CashCollectionSheduleTaskTable | None:
 
         async with AsyncSessionLocal() as session:
 
             result = await session.execute(
-                select(ScheduledCashCollectionTable).where(
-                    ScheduledCashCollectionTable.id == task_id
+                select(CashCollectionSheduleTaskTable).where(
+                    CashCollectionSheduleTaskTable.id == task_id
                 )
             )
 
             return result.scalar_one_or_none()
 
-    async def get_all(self) -> list[ScheduledCashCollectionTable]:
+    async def get_all(self) -> list[CashCollectionSheduleTaskTable]:
 
         async with AsyncSessionLocal() as session:
 
             result = await session.execute(
-                select(ScheduledCashCollectionTable)
+                select(CashCollectionSheduleTaskTable)
             )
 
             return list(result.scalars().all())

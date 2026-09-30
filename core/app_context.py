@@ -9,6 +9,8 @@ from telegram_bot.services.group_service import GroupService
 from telegram_bot.services.task_service import TaskService
 from telegram_bot.services.notification_service import NotificationService
 from telegram_bot.services.task_runtime_service import TaskRuntimeService
+from telegram_bot.services.cash_collection_runtime_service import CashCollectionRuntimeService
+
 from telegram_bot.services.scheduler_service import SchedulerService
 from telegram_bot.services.cash_collection_service import CashCollectionService
 
@@ -22,7 +24,9 @@ from database.repositories.task_tittle import TaskTittleRepository
 from database.repositories.city import CityRepository
 from database.repositories.adress import AdressRepository
 from database.repositories.point import PointRepository
-from database.repositories.sheduled_cash_collection import ScheduledCashCollectionRepository
+from database.repositories.cash_collection_shedule_task import CashCollectionScheduleTaskRepository
+from database.repositories.cash_collection_task import CashCollectionTaskRepository
+
 
 
 class AppContext:
@@ -39,7 +43,9 @@ class AppContext:
         self.city_database = CityRepository()
         self.adress_database = AdressRepository()
         self.point_database = PointRepository()
-        self.sheduled_cash_collection_database = ScheduledCashCollectionRepository()
+        self.cash_collection_shedule_database = CashCollectionScheduleTaskRepository()
+        self.cash_collection_task_database = CashCollectionTaskRepository()
+        
         # caches
         self.user_cache = UserCache()
         self.group_cache = GroupCache()
@@ -69,7 +75,10 @@ class AppContext:
             self.scheduled_task_database
         )
         
-        self.cash_collection_service = CashCollectionService(self.sheduled_cash_collection_database)
+        self.cash_collection_service = CashCollectionService(
+            self.cash_collection_shedule_database,
+            self.cash_collection_task_database,
+            self.template_service)
 
         self.notification_service = NotificationService(bot)
 
@@ -78,10 +87,18 @@ class AppContext:
             self.notification_service,
             self.user_service
         )
-
+        self.cash_collection_runtime_service = CashCollectionRuntimeService(
+            self.cash_collection_service,
+            self.notification_service,
+            self.user_service
+        )
+        
         self.scheduler_service = SchedulerService(
             task_service=self.task_service,
-            runtime_service=self.runtime_service
+            cash_collection_service=self.cash_collection_service,
+            task_runtime_service=self.runtime_service,
+            cash_collection_runtime_service=self.cash_collection_runtime_service
+            
         )
 
     async def warm_up(self):

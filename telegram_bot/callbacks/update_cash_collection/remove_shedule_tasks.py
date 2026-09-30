@@ -67,13 +67,13 @@ async def cancel_new_scheduler_task_handler(callback: CallbackQuery):
     )
     
 @router.callback_query(F.data.startswith("confirm_cash_cllton_shdl_tsk"))
-async def confirm_remove_yes(callback: CallbackQuery, cash_collection_service: CashCollectionService, state: FSMContext, ):
+async def confirm_remove_task(callback: CallbackQuery, cash_collection_service: CashCollectionService, state: FSMContext):
     action, scheduler_task_id, answer = callback.data.split(":")
     if answer == "yes":
         city = cash_collection_service.sheduled_tasks[scheduler_task_id].city
         await cash_collection_service.remove_shedule_task_by_id(scheduler_task_id)
         await callback.message.edit_text(
-        text=f"<b>Конфигурация для создания задач инкассации по городу {city} была удалена...</b>",
+        text=f"<b>Конфигурация для создания задач инкассации по городу {city} была удалена...</b>\n/menu",
         reply_markup=None, 
         parse_mode="HTML"
             )

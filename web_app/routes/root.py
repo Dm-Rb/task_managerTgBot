@@ -7,7 +7,6 @@ router = APIRouter()
 
 @router.get("/")
 async def index(request: Request):
-    print(request.session.get("authenticated"))
     if request.session.get("authenticated") is not True:
         return RedirectResponse(
             url="/login",

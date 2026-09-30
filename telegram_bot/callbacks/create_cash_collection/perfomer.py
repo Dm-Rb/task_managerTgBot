@@ -70,7 +70,7 @@ async def template_back_handler(callback: CallbackQuery, state: FSMContext, user
     # Сохраняем список user.tg_id для более быстрого получения списка исполнителей в performer_page_handler
     await state.update_data(performers_list=[p.tg_id for p in performers])  # list[int]
 
-    await show_performer_selection(callback, performers)
+    await show_performer_selection(callback, state, performers)
     
 
 

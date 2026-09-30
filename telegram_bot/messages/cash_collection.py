@@ -1,6 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from telegram_bot.models.cash_collection_task import ScheduledCashCollectionTask
 from telegram_bot.services.template_service import TemplateService
+from telegram_bot.models.cash_collection_task import CashCollectionTask, CashCollectionPoint
 
 
 async def cash_collection_creation_message_by_state_data(state: FSMContext) -> str:
@@ -73,3 +74,84 @@ def schedule_task_message_by_schedule_task_obj(schedule_task: ScheduledCashColle
         lines.append(f"<b>Повторять каждые:</b> <i>{str(schedule_task.every_n_days)} дня(ей)</i>")
 
     return "\n".join(lines)
+
+def new_cash_collection_task_for_crearot(cash_collection_tasks: CashCollectionTask) -> str:
+    message = f"💬 Сотрудник <b>{cash_collection_tasks.performer_name}</b> получил уведомление о необходимости проведения инкассации " 
+    message += f"в городе <b>{cash_collection_tasks.city}</b> из пунктов:\n"
+    for point in cash_collection_tasks.points:
+        message += f"📍 <i>{point.adress}, {point.point};</i>\n"
+    
+    message += "Текущий статус задач можно посмотреть перейдя в главном меню бота в раздел <b>|💰 Инкассация</b>| <b>></b> <b>|📒 Список активных задач|</b> "
+    message += "или отправив боту комманду \n/show_cash_tasks"
+    return message
+ 
+def new_cash_collection_task_for_performer(cash_collection_tasks: CashCollectionTask) -> str:
+    message = f"💬 Вам необходимо провести инкассацию в городе <b>{cash_collection_tasks.city}</b> " 
+    message += f"из пунктов:\n"
+    for point in cash_collection_tasks.points:
+        message += f"📍 {point.adress}, {point.point};\n"
+    
+    message += "Подробности задачи можно посмотреть открыв меню бота в разделе <b>|💰 Инкассация|</b> "
+    message += "или отправив боту комманду /show_cash_tasks"
+    return message
+
+def show_active_tasks_for_crearot(cash_collection_tasks: CashCollectionTask) -> str:
+    message = f"<b>Город:</b> {cash_collection_tasks.city}\n" 
+    
+    points_sorted = sorted(cash_collection_tasks.points, key=lambda point: point.status)
+    status_emoji = {
+        "В процессе": "🟡",
+        "Выполнена": "🟢",
+    }
+    message += f"📍 <b>Пункты:</b>\n"
+    for point in points_sorted:
+        emoji = status_emoji.get(point.status, "⬜")
+        message += f"{emoji} {point.status} > <i>{point.adress}, {point.point}</i>;\n"
+        
+    message += f"<b>Исполнитель:</b> {cash_collection_tasks.performer_name}\n"
+    message += f"<b>Созданно в:</b> {str(cash_collection_tasks.created_at)}\n"
+    message += f"<b>Описание:</b> {cash_collection_tasks.description}\n"
+
+    return message
+
+def show_active_tasks_for_perfomer(cash_collection_tasks: CashCollectionTask) -> str:
+    message = "💰 Проведите инкассацию автоматов\n"
+    message += f"<b>🏢 Город:</b> {cash_collection_tasks.city}\n" 
+    message += f"<b>Описание:</b> {cash_collection_tasks.description}\n"
+    message += f"Следуйте в один из пунктов, затем нажмите соответствующую кнопку:\n"
+
+    return message
+
+def remove_tasks_for_perfomer(cash_collection_tasks: CashCollectionTask) -> str:  
+    message = f"💬 Ваши задачи по проведению инкассации из пунктов в городе <b>{cash_collection_tasks.city}</b> были отменены Администратором" 
+
+    return message
+
+def start_point(point: CashCollectionPoint) -> str:  
+    message = f"В данный момент вы должны находиться в пункте 📍 <b>{point.adress}, {point.point}</b>.\n"
+    message +=  "Отправьте боту фото показателей автомата ДО начала работ, после чего проведите инкассацию.\n/cancel - отмена\n" 
+    message += "🔻📸🔻"
+    return message
+
+def resume_point() -> str:  
+    message =  "Проведите инкассацию, затем отправьте боту фото ПОСЛЕ проведения работ.\n/cancel - отмена\n" 
+    message += "🔻📸🔻"
+    return message
+
+def show_complite_point(point: CashCollectionPoint) -> str:  
+    message = f"Завершить задачу по инкассации пункта 📍 <b>{point.adress}, {point.point}</b>?"
+    return message
+
+def completed_point_for_creator_msg(task: CashCollectionTask, point):
+    message = f"💰 Сотрудник <b>{task.performer_name}</b> выполнил инкассацию\n"
+    message += f"<b>Город:</b> {task.city}\n"
+    message += f"<b>Пункт:</b> {point.adress}, {point.point}\n"
+    message += f"<b>Комментарий:</b> {point.comment}\n"
+    return message
+
+def remaining_points_for_perfomer(points: list):
+    message = f"<b>Осталось {str(len(points))} пунктов:</b>\n"
+    for point in points:
+        message += f"📍 <i>{point.adress}, {point.point}</i>;\n"
+    message += "/show_cash_tasks"
+    return message

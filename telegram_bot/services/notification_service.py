@@ -11,13 +11,13 @@ class NotificationService:
     async def send_to_user(self, user_id: int, text: str, reply_markup: InlineKeyboardMarkup = None,
                            parse_mode: str = "HTML") -> bool:
         """Отправить сообщение пользователю"""
+        await self.bot.send_message(chat_id=user_id, text=text, reply_markup=reply_markup, parse_mode=parse_mode)
+        # try:
+        #     await self.bot.send_message(chat_id=user_id, text=text, reply_markup=reply_markup, parse_mode=parse_mode)
+        #     return True
 
-        try:
-            await self.bot.send_message(chat_id=user_id, text=text, reply_markup=reply_markup, parse_mode=parse_mode)
-            return True
-
-        except Exception as e:
-            return False
+        # except Exception as e:
+        #     return False
 
     async def send_to_group(self, group_id: int, text: str,
                            parse_mode: str = "HTML", thread_id: int or None = None) -> bool:
@@ -37,8 +37,7 @@ class NotificationService:
             return True
 
         except Exception as e:
-            print(f"[NotificationService] send_to_group error: {e}")
-            return False
+            raise ValueError(f"[NotificationService] send_to_group error: {e}")
 
     async def broadcast_to_users(self,
         user_ids: list[int],

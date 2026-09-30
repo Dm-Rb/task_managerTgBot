@@ -227,7 +227,7 @@ async def show_schedule_task_confirmation(message_or_callback, state: FSMContext
 async def show_selected(callback: CallbackQuery, state: FSMContext, callback_data_prefix: str, show_delete_button=None):
     """Показывает сообщение с выбранной информацией + клавиатуру Продолжить/Назад"""
     text = await get_task_creation_message_by_state_data(state)  # формируем текст сообщения из state.get_data()
-
+    text += "\nОтменить всё /cancel"
     await callback.message.edit_text(
         text=text,
         reply_markup=keyboards.confirm_or_back_keyboard(callback_data_prefix, show_delete_button),  # префикс для коллбеков

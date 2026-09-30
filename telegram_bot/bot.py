@@ -40,7 +40,8 @@ async def create_bot():
     dp["template_service"] = context.template_service
     dp["runtime_service"] = context.runtime_service
     dp["cash_collection_service"] = context.cash_collection_service
-
+    dp["cash_collection_runtime_service"] = context.cash_collection_runtime_service
+    
     dp.include_router(handlers_router)
     dp.include_router(callbacks_create_task)
     dp.include_router(callbacks_update_task)
