@@ -19,7 +19,7 @@ async def sms_settings(request: Request):
         name="sms_settings.html",
         context={
             "active_section": "sms_settings",
-            "webhook_url": f"{settings.PUBLIC_IP}/webhook/sms",
+            "webhook_url": f"{settings.PUBLIC_IP}:{settings.PORT}/webhook/sms",
             
         }
     )
