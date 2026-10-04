@@ -11,12 +11,12 @@ from web_app.api.users import router as api_users_router
 from web_app.api.points import router as api_points_router
 
 
-
 from web_app.routes.auth import router as auth_router
 from web_app.routes.root import router as root_router
 from web_app.routes.task_tittles import router as task_tittles_router
 from web_app.routes.users import router as users_router
 from web_app.routes.points import router as points_router
+from web_app.routes.sms import router as sms_router
 
 
 templates = Jinja2Templates(directory="web_app/templates")
@@ -39,6 +39,8 @@ def create_app(context: AppContext):
     app.include_router(auth_router)
     app.include_router(router_api_login)
     app.include_router(task_tittles_router)
+    app.include_router(sms_router)
+
     app.include_router(api_task_tittles_router)
     app.include_router(users_router)
     app.include_router(api_users_router)
