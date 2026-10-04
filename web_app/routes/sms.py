@@ -1,20 +1,41 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
 from web_app.routes.templates import templates
+from core.config import settings
 
 router = APIRouter()
 
 
-@router.post("/webhook/sms")
-async def sms_webhook(request: Request):
-    # 2. Разбор тела в зависимости от Content-Type
-    content_type = request.headers.get("content-type", "")
-    if "application/json" in content_type:
-        data = await request.json()
-    elif "form" in content_type:
-        data = dict(await request.form())
-    else:
-        raw = await request.body()
-        
-        data = {}
-    print(data)
+@router.get("/sms/settings")
+async def sms_settings(request: Request):
+    if request.session.get("authenticated") is not True:
+        return RedirectResponse(
+            url="/login",
+            status_code=303,
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="sms_settings.html",
+        context={
+            "active_section": "sms_settings",
+            "webhook_url": f"{settings.PUBLIC_IP}/webhook/sms",
+            
+        }
+    )
+    
+@router.get("/sms/details")
+async def sms_details(request: Request):
+    if request.session.get("authenticated") is not True:
+        return RedirectResponse(
+            url="/login",
+            status_code=303,
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="sms_details.html",
+        context={
+            "active_section": "sms_details",          
+        }
+    )     

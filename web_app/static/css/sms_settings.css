@@ -1,0 +1,70 @@
+.sms-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+    padding: 24px;
+}
+
+.settings-hint {
+    margin: 0 0 18px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 60ch;
+}
+
+.webhook-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.webhook-url {
+    flex: 1;
+    min-width: 240px;
+    background: #f5f7fa;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    padding: 11px 14px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 13px;
+    color: #111827;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.copy-button {
+    flex-shrink: 0;
+}
+
+.copy-button.copied {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+.copy-feedback {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #16a34a;
+    min-height: 18px;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.copy-feedback.show {
+    opacity: 1;
+}
+
+@media (max-width: 700px) {
+    .settings-card { padding: 18px; }
+    .webhook-row { flex-direction: column; align-items: stretch; }
+    .webhook-url { white-space: normal; word-break: break-all; }
+    .copy-button { width: 100%; }
+}

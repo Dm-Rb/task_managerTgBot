@@ -17,5 +17,6 @@ class Config:
     DATABASE_URL = os.getenv("DATABASE_URL")
     HOST = os.getenv("HOST")
     PORT = os.getenv("PORT")
-
+    PUBLIC_IP=os.getenv("PUBLIC_IP")
+    
 settings = Config()

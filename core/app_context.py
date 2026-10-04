@@ -10,7 +10,6 @@ from telegram_bot.services.task_service import TaskService
 from telegram_bot.services.notification_service import NotificationService
 from telegram_bot.services.task_runtime_service import TaskRuntimeService
 from telegram_bot.services.cash_collection_runtime_service import CashCollectionRuntimeService
-
 from telegram_bot.services.scheduler_service import SchedulerService
 from telegram_bot.services.cash_collection_service import CashCollectionService
 
@@ -26,6 +25,8 @@ from database.repositories.adress import AdressRepository
 from database.repositories.point import PointRepository
 from database.repositories.cash_collection_shedule_task import CashCollectionScheduleTaskRepository
 from database.repositories.cash_collection_task import CashCollectionTaskRepository
+from database.repositories.sms import SmsRepository
+
 
 
 
@@ -45,7 +46,7 @@ class AppContext:
         self.point_database = PointRepository()
         self.cash_collection_shedule_database = CashCollectionScheduleTaskRepository()
         self.cash_collection_task_database = CashCollectionTaskRepository()
-        
+        self.sms_database = SmsRepository()
         # caches
         self.user_cache = UserCache()
         self.group_cache = GroupCache()

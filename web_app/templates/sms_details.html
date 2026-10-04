@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Детализация СМС{% endblock %}
+
+{% block page_title %}Детализация СМС{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/sms_details.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="sms-details">
+
+    <div id="smsList" class="sms-list">
+        <!-- карточки СМС рендерятся через JS -->
+    </div>
+
+    <p id="smsEmpty" class="placeholder hidden">
+        Пока нет ни одного сообщения
+    </p>
+
+    <nav id="smsPagination" class="pagination hidden" aria-label="Страницы">
+
+        <button
+            id="smsPrevPage"
+            class="secondary-button pagination-button"
+            type="button"
+        >
+            ← Назад
+        </button>
+
+        <span id="smsPageInfo" class="pagination-info"></span>
+
+        <button
+            id="smsNextPage"
+            class="secondary-button pagination-button"
+            type="button"
+        >
+            Вперёд →
+        </button>
+
+    </nav>
+
+</div>
+
+
+<!-- DELETE MODAL -->
+
+<div id="smsDeleteModal" class="modal-overlay">
+
+    <div class="modal">
+
+        <h2 class="modal-title">
+            Удаление сообщения
+        </h2>
+
+        <p class="delete-text">
+            Вы действительно хотите удалить это сообщение? Действие необратимо.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                id="smsDeleteCancel"
+                class="secondary-button"
+                type="button"
+            >
+                Отмена
+            </button>
+
+            <button
+                id="smsDeleteConfirm"
+                class="danger-button"
+                type="button"
+            >
+                Удалить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/sms_details.js"></script>
+{% endblock %}

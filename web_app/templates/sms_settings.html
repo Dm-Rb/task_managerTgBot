@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки СМС{% endblock %}
+
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/sms_settings.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="sms-settings">
+
+    <!-- WEBHOOK -->
+
+    <section class="settings-card">
+
+        <div class="section-header">
+            <h2 class="section-title">Адрес для вебхука</h2>
+        </div>
+
+        <p class="settings-hint">
+            Укажите этот адрес в настройках СМС-шлюза, чтобы входящие сообщения
+            поступали в систему.
+        </p>
+
+        <div class="webhook-row">
+
+            <code class="webhook-url" id="webhookUrl">{{ webhook_url }}</code>
+
+            <button
+                id="copyWebhookButton"
+                class="secondary-button copy-button"
+                type="button"
+                data-copy-target="webhookUrl"
+            >
+                Скопировать
+            </button>
+
+        </div>
+
+        <p class="copy-feedback" id="copyFeedback" role="status" aria-live="polite"></p>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/sms_settings.js"></script>
+{% endblock %}
