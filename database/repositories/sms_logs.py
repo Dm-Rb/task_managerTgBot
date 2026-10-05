@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import delete, desc, func, select
-from database.models.sms import SmsTable 
+from database.models.sms_logs import SmsTable 
 from database.session import AsyncSessionLocal
 
 

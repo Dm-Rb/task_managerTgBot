@@ -10,6 +10,7 @@ from web_app.api.task_tittles import router as api_task_tittles_router
 from web_app.api.users import router as api_users_router
 from web_app.api.points import router as api_points_router
 from web_app.api.sms import router as api_sms_router
+from web_app.api.telephony import router as api_telephony_router
 
 
 from web_app.routes.auth import router as auth_router
@@ -18,6 +19,8 @@ from web_app.routes.task_tittles import router as task_tittles_router
 from web_app.routes.users import router as users_router
 from web_app.routes.points import router as points_router
 from web_app.routes.sms import router as sms_router
+from web_app.routes.telephony import router as telephony_router
+
 
 templates = Jinja2Templates(directory="web_app/templates")
 
@@ -40,6 +43,8 @@ def create_app(context: AppContext):
     app.include_router(router_api_login)
     app.include_router(task_tittles_router)
     app.include_router(sms_router)
+    app.include_router(telephony_router)
+
 
     app.include_router(api_task_tittles_router)
     app.include_router(users_router)
@@ -47,6 +52,7 @@ def create_app(context: AppContext):
     app.include_router(points_router)
     app.include_router(api_points_router)
     app.include_router(api_sms_router)
+    app.include_router(api_telephony_router)
 
 
     @app.exception_handler(404)

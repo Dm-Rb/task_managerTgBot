@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Детализация звонков{% endblock %}
+
+{% block page_title %}Детализация звонков{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/call_details.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="call-details">
+
+    <!-- CALL LIST -->
+
+    <div id="callList" class="call-list"></div>
+
+    <p id="callEmpty" class="placeholder hidden">
+        Пока нет ни одного звонка
+    </p>
+
+    <nav id="callPagination" class="pagination hidden" aria-label="Страницы">
+
+        <button
+            id="callPrevPage"
+            class="secondary-button pagination-button"
+            type="button"
+        >
+            ← Назад
+        </button>
+
+        <span id="callPageInfo" class="pagination-info"></span>
+
+        <button
+            id="callNextPage"
+            class="secondary-button pagination-button"
+            type="button"
+        >
+            Вперёд →
+        </button>
+
+    </nav>
+
+</div>
+
+
+<!-- DELETE MODAL -->
+
+<div id="callDeleteModal" class="modal-overlay">
+
+    <div class="modal">
+
+        <h2 class="modal-title">
+            Удаление записи
+        </h2>
+
+        <p class="delete-text">
+            Вы действительно хотите удалить эту запись о звонке? Действие необратимо.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                id="callDeleteCancel"
+                class="secondary-button"
+                type="button"
+            >
+                Отмена
+            </button>
+
+            <button
+                id="callDeleteConfirm"
+                class="danger-button"
+                type="button"
+            >
+                Удалить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/call_details.js"></script>
+{% endblock %}

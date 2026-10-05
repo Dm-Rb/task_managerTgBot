@@ -25,7 +25,9 @@ from database.repositories.adress import AdressRepository
 from database.repositories.point import PointRepository
 from database.repositories.cash_collection_shedule_task import CashCollectionScheduleTaskRepository
 from database.repositories.cash_collection_task import CashCollectionTaskRepository
-from database.repositories.sms import SmsRepository
+from database.repositories.sms_logs import SmsRepository
+from database.repositories.call_logs import CallRepository
+
 
 
 
@@ -47,6 +49,7 @@ class AppContext:
         self.cash_collection_shedule_database = CashCollectionScheduleTaskRepository()
         self.cash_collection_task_database = CashCollectionTaskRepository()
         self.sms_database = SmsRepository()
+        self.telephony_database = CallRepository()
         # caches
         self.user_cache = UserCache()
         self.group_cache = GroupCache()

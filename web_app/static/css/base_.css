@@ -253,35 +253,6 @@ body {
     .page-title { font-size: 22px; margin-bottom: 22px; }
     .section-header { align-items: flex-start; flex-direction: column; }
     .primary-button { width: 100%; }
-
-    /* В свёрнутом виде меню видны только иконки, поэтому заливка
-       при наведении путает — убираем её, а активный раздел отмечаем
-       обводкой вместо заливки. Обводка задана отдельным свойством
-       (border), поэтому не пропадает при наведении на уже активный
-       пункт. */
-    .sidebar-menu .menu-button:hover {
-        background: transparent;
-        color: #d1d5db;
-    }
-
-    .sidebar-menu .menu-button.active {
-        background: transparent;
-        color: #d1d5db;
-        border: 1px solid #9ca3af;
-    }
-
-    .submenu-button:hover {
-        background: transparent;
-        color: #9ca3af;
-    }
-
-    /* .submenu-button.active и .submenu-button:hover имеют одинаковую
-       специфичность, и без этого правила наведение на уже активный
-       пункт подменю перебивало его подсветку. */
-    .submenu-button.active:hover {
-        background: #374151;
-        color: #fff;
-    }
 }
 
 .not-found { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 80px 20px; }

@@ -84,18 +84,6 @@ async def group_continue_handler(callback: CallbackQuery, state: FSMContext, gro
     await show_performer_selection(callback, state, performers)
 
 
-# @router.callback_query(F.data == "group:delete")
-# async def create_task_template(callback: CallbackQuery, state: FSMContext, group_service: GroupService):
-#     state_data = await state.get_data() # получить данные у далить через сервис
-#     if state_data.get('group_id', None):
-#         if state_data.get('topic_id', None):
-#             await group_service.remove_topic(state_data['group_id'], state_data['topic_id'])
-#         else:
-#             await group_service.remove_group(state_data['group_id'])
-#     await show_groups_selection(callback, state, group_service)
-#     await callback.answer()
-
-
 @router.callback_query(F.data == "group:delete")
 async def group_delete_button(callback: CallbackQuery):
     await callback.message.edit_text(text='Вы действительно хотите удалить этот объект?',

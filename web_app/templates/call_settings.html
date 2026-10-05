@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки телефонии{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/call_settings.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="call-settings">
+
+    <!-- WEBHOOK URL -->
+
+    <section class="settings-card">
+
+        <div class="section-header">
+            <h2 class="section-title">Адрес для вебхука</h2>
+        </div>
+
+        <p class="settings-hint">
+            Укажите этот адрес в настройках телефонии, чтобы данные о звонках
+            поступали в систему.
+        </p>
+
+        <div class="webhook-row">
+
+            <code class="webhook-url" id="webhookUrl">{{ webhook_url }}</code>
+
+            <button
+                class="secondary-button copy-button"
+                type="button"
+                data-copy-target="webhookUrl"
+            >
+                Скопировать
+            </button>
+
+        </div>
+
+        <p class="copy-feedback" data-feedback-for="webhookUrl" role="status" aria-live="polite"></p>
+
+    </section>
+
+
+    <!-- TOKEN -->
+
+    <section class="settings-card">
+
+        <div class="section-header">
+            <h2 class="section-title">Токен доступа</h2>
+        </div>
+
+        <p class="settings-hint">
+            Укажите этот токен в настройках телефонии для авторизации вебхука.
+        </p>
+
+        <div class="webhook-row">
+
+            <code class="webhook-url" id="webhookToken">{{ webhook_token }}</code>
+
+            <button
+                class="secondary-button copy-button"
+                type="button"
+                data-copy-target="webhookToken"
+            >
+                Скопировать
+            </button>
+
+        </div>
+
+        <p class="copy-feedback" data-feedback-for="webhookToken" role="status" aria-live="polite"></p>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/call_settings.js"></script>
+{% endblock %}

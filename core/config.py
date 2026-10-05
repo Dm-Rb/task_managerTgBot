@@ -18,5 +18,6 @@ class Config:
     HOST = os.getenv("HOST")
     PORT = os.getenv("PORT")
     PUBLIC_IP=os.getenv("PUBLIC_IP")
+    WEBHOOK_TOKEN=os.getenv("WEBHOOK_TOKEN")
     
 settings = Config()

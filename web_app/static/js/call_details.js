@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 10;
 
-    const listEl = document.getElementById("smsList");
-    const emptyEl = document.getElementById("smsEmpty");
-    const paginationEl = document.getElementById("smsPagination");
-    const pageInfoEl = document.getElementById("smsPageInfo");
-    const prevButton = document.getElementById("smsPrevPage");
-    const nextButton = document.getElementById("smsNextPage");
+    const listEl = document.getElementById("callList");
+    const emptyEl = document.getElementById("callEmpty");
+    const paginationEl = document.getElementById("callPagination");
+    const pageInfoEl = document.getElementById("callPageInfo");
+    const prevButton = document.getElementById("callPrevPage");
+    const nextButton = document.getElementById("callNextPage");
 
-    const deleteModal = document.getElementById("smsDeleteModal");
-    const deleteCancel = document.getElementById("smsDeleteCancel");
-    const deleteConfirm = document.getElementById("smsDeleteConfirm");
+    const deleteModal = document.getElementById("callDeleteModal");
+    const deleteCancel = document.getElementById("callDeleteCancel");
+    const deleteConfirm = document.getElementById("callDeleteConfirm");
 
     let currentPage = 1;
     let totalPages = 1;
@@ -21,11 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadPage(page) {
 
-        const response = await fetch(`/api/sms?page=${page}&limit=${PAGE_SIZE}`);
+        const response = await fetch(`/api/calls?page=${page}&limit=${PAGE_SIZE}`, {
+            credentials: "same-origin",
+        });
 
         if (!response.ok) {
             listEl.innerHTML = "";
-            emptyEl.textContent = "Не удалось загрузить сообщения";
+            emptyEl.textContent = "Не удалось загрузить звонки";
             emptyEl.classList.remove("hidden");
             paginationEl.classList.add("hidden");
             return;
@@ -48,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
         listEl.innerHTML = "";
 
         if (!items || items.length === 0) {
-            emptyEl.textContent = "Пока нет ни одного сообщения";
+            emptyEl.textContent = "Пока нет ни одного звонка";
             emptyEl.classList.remove("hidden");
             return;
         }
@@ -63,49 +65,55 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderCard(item) {
 
         const card = document.createElement("div");
-        card.className = "sms-card";
+        card.className = "call-card";
         card.dataset.id = item.id;
 
         const body = document.createElement("div");
-        body.className = "sms-card-body";
+        body.className = "call-card-body";
 
         const date = document.createElement("div");
-        date.className = "sms-date";
+        date.className = "call-date";
         date.textContent = formatDate(item.completed_at);
 
-        const from = document.createElement("div");
-        from.className = "sms-from";
+        body.append(date);
 
-        const fromIcon = document.createElement("span");
-        fromIcon.className = "sms-from-icon";
-        fromIcon.textContent = "↗";
-        fromIcon.setAttribute("aria-hidden", "true");
+        // исходящий номер — отображается всегда
+        const fromNumber = item.from_ ?? item.from ?? "";
+        body.append(renderNumberRow(fromNumber, "outgoing"));
 
-        const fromNumber = document.createElement("span");
-        fromNumber.textContent = item.from_ ?? item.from ?? "";
+        // входящий номер — только если он есть
+        const toNumber = item.to_ ?? item.to ?? null;
+        if (toNumber) {
+            body.append(renderNumberRow(toNumber, "incoming"));
+        }
 
-        from.append(fromIcon, fromNumber);
+        const shortText = document.createElement("div");
+        shortText.className = "call-short-text";
+        shortText.textContent = item.short_text ?? "";
+        body.append(shortText);
 
-        const text = document.createElement("div");
-        text.className = "sms-text";
-        text.textContent = item.text;
+        if (item.text) {
+            const text = document.createElement("div");
+            text.className = "call-text";
+            text.textContent = item.text;
 
-        const expandButton = document.createElement("button");
-        expandButton.className = "sms-expand-button hidden";
-        expandButton.type = "button";
-        expandButton.textContent = "Показать полностью";
+            const expandButton = document.createElement("button");
+            expandButton.className = "call-expand-button";
+            expandButton.type = "button";
+            expandButton.textContent = "Показать полностью";
 
-        expandButton.addEventListener("click", () => {
-            const isExpanded = text.classList.toggle("expanded");
-            expandButton.textContent = isExpanded ? "Свернуть" : "Показать полностью";
-        });
+            expandButton.addEventListener("click", () => {
+                const isExpanded = text.classList.toggle("expanded");
+                expandButton.textContent = isExpanded ? "Свернуть" : "Показать полностью";
+            });
 
-        body.append(date, from, text, expandButton);
+            body.append(text, expandButton);
+        }
 
         const deleteButton = document.createElement("button");
-        deleteButton.className = "sms-delete-button";
+        deleteButton.className = "call-delete-button";
         deleteButton.type = "button";
-        deleteButton.setAttribute("aria-label", "Удалить сообщение");
+        deleteButton.setAttribute("aria-label", "Удалить запись");
         deleteButton.textContent = "🗑";
 
         deleteButton.addEventListener("click", () => {
@@ -115,14 +123,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         card.append(body, deleteButton);
 
-        // проверяем, действительно ли текст обрезан (после вставки в DOM)
-        requestAnimationFrame(() => {
-            if (text.scrollHeight > text.clientHeight + 1) {
-                expandButton.classList.remove("hidden");
-            }
-        });
-
         return card;
+    }
+
+    function renderNumberRow(number, direction) {
+
+        const row = document.createElement("div");
+        row.className = "call-number";
+
+        const icon = document.createElement("span");
+        icon.className = `call-number-icon ${direction}`;
+        icon.textContent = direction === "outgoing" ? "↗" : "↙";
+        icon.setAttribute(
+            "aria-label",
+            direction === "outgoing" ? "Исходящий номер" : "Входящий номер"
+        );
+
+        const numberText = document.createElement("span");
+        numberText.textContent = number;
+
+        row.append(icon, numberText);
+
+        return row;
     }
 
     function formatDate(value) {
@@ -179,8 +201,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const response = await fetch(`/api/sms/${pendingDeleteId}`, {
+        const response = await fetch(`/api/calls/${pendingDeleteId}`, {
             method: "DELETE",
+            credentials: "same-origin",
         });
 
         deleteModal.classList.remove("show");
@@ -192,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         pendingDeleteId = null;
 
-        // если удалили последнюю запись на странице (и страница не первая) — переходим на предыдущую
         const remainingOnPage = listEl.children.length - 1;
         if (remainingOnPage === 0 && currentPage > 1) {
             loadPage(currentPage - 1);

@@ -32,18 +32,10 @@
 }
 
 .sms-from {
-    display: flex;
-    align-items: center;
-    gap: 6px;
     font-size: 14px;
     font-weight: 600;
     color: #111827;
     margin-bottom: 8px;
-}
-
-.sms-from-icon {
-    color: #16a34a;
-    font-size: 13px;
 }
 
 .sms-text {

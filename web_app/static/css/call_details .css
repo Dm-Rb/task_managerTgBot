@@ -1,16 +1,12 @@
-.sms-details {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
+/* --- список звонков --- */
 
-.sms-list {
+.call-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.sms-card {
+.call-card {
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -20,68 +16,92 @@
     padding: 16px 18px;
 }
 
-.sms-card-body {
+.call-card-body {
     flex: 1;
     min-width: 0;
 }
 
-.sms-date {
+.call-date {
     font-size: 13px;
     color: #6b7280;
-    margin-bottom: 4px;
-}
-
-.sms-from {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
     margin-bottom: 8px;
 }
 
-.sms-from-icon {
-    color: #16a34a;
-    font-size: 13px;
+.call-number {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 3px;
 }
 
-.sms-text {
+.call-number-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.call-number-icon.outgoing {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.call-number-icon.incoming {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.call-short-text {
     font-size: 14px;
     line-height: 1.5;
     color: #374151;
     white-space: pre-wrap;
     word-break: break-word;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    margin: 8px 0 0;
 }
 
-.sms-text.expanded {
-    -webkit-line-clamp: unset;
-    overflow: visible;
+.call-text {
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.5;
+    color: #4b5563;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 8px 0 0;
+    padding-left: 10px;
+    border-left: 2px solid #e5e7eb;
+    display: none;
 }
 
-.sms-expand-button {
+.call-text.expanded {
+    display: block;
+}
+
+.call-expand-button {
     border: none;
     background: transparent;
     color: #2563eb;
     font-size: 13px;
-    padding: 6px 0 0;
+    padding: 8px 0 0;
     cursor: pointer;
 }
 
-.sms-expand-button:hover {
+.call-expand-button:hover {
     text-decoration: underline;
 }
 
-.sms-expand-button.hidden {
+.call-expand-button.hidden {
     display: none;
 }
 
-.sms-delete-button {
+.call-delete-button {
     flex-shrink: 0;
     border: none;
     background: transparent;
@@ -98,10 +118,12 @@
     transition: background .15s, color .15s;
 }
 
-.sms-delete-button:hover {
+.call-delete-button:hover {
     background: #fee2e2;
     color: #dc2626;
 }
+
+/* --- пагинация --- */
 
 .pagination {
     display: flex;
@@ -124,6 +146,6 @@
 .hidden { display: none; }
 
 @media (max-width: 700px) {
-    .sms-card { padding: 14px; gap: 10px; }
+    .call-card { padding: 14px; gap: 10px; }
     .pagination { flex-wrap: wrap; }
 }

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 10;
 
     const listEl = document.getElementById("smsList");
     const emptyEl = document.getElementById("smsEmpty");
@@ -21,7 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadPage(page) {
 
-        const response = await fetch(`/api/sms?page=${page}&limit=${PAGE_SIZE}`);
+        const response = await fetch(`/api/sms?page=${page}&limit=${PAGE_SIZE}`, {
+            credentials: "same-origin",
+        });
 
         if (!response.ok) {
             listEl.innerHTML = "";
@@ -75,16 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const from = document.createElement("div");
         from.className = "sms-from";
-
-        const fromIcon = document.createElement("span");
-        fromIcon.className = "sms-from-icon";
-        fromIcon.textContent = "↗";
-        fromIcon.setAttribute("aria-hidden", "true");
-
-        const fromNumber = document.createElement("span");
-        fromNumber.textContent = item.from_ ?? item.from ?? "";
-
-        from.append(fromIcon, fromNumber);
+        from.textContent = item.from_ ?? item.from ?? "";
 
         const text = document.createElement("div");
         text.className = "sms-text";
@@ -181,6 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const response = await fetch(`/api/sms/${pendingDeleteId}`, {
             method: "DELETE",
+            credentials: "same-origin",
         });
 
         deleteModal.classList.remove("show");
