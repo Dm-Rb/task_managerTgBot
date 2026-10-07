@@ -36,3 +36,13 @@ async def call_details_page(request: Request):
             "active_section": "telephony-details"
         }
     )
+    
+@router.post("/webhook/call")
+async def webhook_call(request: Request):
+    size = 0
+    async for chunk in request.stream():
+        size += len(chunk)
+
+    filename = request.headers.get("x-filename")
+    print(f"Получен файл: {filename}, размер: {size} байт")
+    return {"status": "ok", "size": size}
