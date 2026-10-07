@@ -19,9 +19,9 @@ class GeminiClient:
 
     # --- Настройки соединения ---
     BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta"
-    CHAT_TIMEOUT: float = 180.0
+    CHAT_TIMEOUT: float = 600.0
     # --- Таймаут и повторы ---
-    ATTEMPT_TIMEOUT: float = 200.0    # жёсткий лимит на одну попытку, сек
+    ATTEMPT_TIMEOUT: float = 600.0    # жёсткий лимит на одну попытку, сек
     RETRY_ATTEMPTS: int = 5          # всего попыток
     RETRY_BASE_DELAY: float = 2.0    # паузы между попытками: 2, 4, 8, 16 сек
     RETRY_STATUSES: tuple[int, ...] = (429, 500, 502, 503, 504)
