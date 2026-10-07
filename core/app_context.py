@@ -12,7 +12,7 @@ from telegram_bot.services.task_runtime_service import TaskRuntimeService
 from telegram_bot.services.cash_collection_runtime_service import CashCollectionRuntimeService
 from telegram_bot.services.scheduler_service import SchedulerService
 from telegram_bot.services.cash_collection_service import CashCollectionService
-
+from web_app.telephony.lelephony_service import TelephonyService
 
 from database.repositories.user import UserRepository
 from database.repositories.group import GroupRepository
@@ -104,6 +104,7 @@ class AppContext:
             cash_collection_runtime_service=self.cash_collection_runtime_service
             
         )
+        self.telephony_service = TelephonyService(self.telephony_database)
 
     async def warm_up(self):
         await self.user_service.warm_up()
