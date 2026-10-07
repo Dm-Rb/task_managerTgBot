@@ -55,7 +55,7 @@ async def address_select_handler(callback: CallbackQuery, state: FSMContext, tem
         await callback.answer("Ошибка", show_alert=True)
         return
 
-    templates: list[AddressTemplate] = await template_service.get_all_adress_templates()
+    templates: list[AddressTemplate] = template_service.adress_templates
 
     if index >= len(templates):
         await callback.answer("Ошибка", show_alert=True)

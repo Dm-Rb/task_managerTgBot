@@ -37,6 +37,7 @@ class TemplateService(TemplateCache):
         self.adreses: dict[int, AdressTable] = {item.id: item for item in adreses}
         self.points: dict[int, PointTable] = {item.id: item for item in points}
         # Формируем строки из city + adress
+        
         self.adress_templates = [f"{item.adress}, {self.cities[item.city_id].city}" for item in adreses]
 
         return
