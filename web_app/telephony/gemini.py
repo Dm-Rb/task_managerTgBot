@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Any
 import httpx
-
+from pathlib import Path
 
 
 class GeminiError(Exception):
@@ -27,7 +27,7 @@ class GeminiClient:
     RETRY_STATUSES: tuple[int, ...] = (429, 500, 502, 503, 504)
 
     # --- Системный промпт ---
-    PROMPT_PATH: str = "system_prompt.json"
+    PROMPT_PATH: Path = Path(__file__).resolve().parent / "system_prompt.json"
     PROMPT_KEY: str = "system_prompt"
 
     def __init__(self, token: str, prompt_path: str | Path | None = None) -> None:
