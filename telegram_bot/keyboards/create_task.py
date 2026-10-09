@@ -62,31 +62,29 @@ def task_templates_keyboard(task_tittles: list[TaskTittleTemplateTable], page: i
 
     return builder.as_markup()
 
-def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) -> InlineKeyboardMarkup:
+def city_address_keyboard(templates: dict, calback_type: str, page: int = 0) -> InlineKeyboardMarkup:
 
     builder = InlineKeyboardBuilder()
-    # кнопка добавить шаблон
-    builder.button(
-        text="➕ Создать шаблон адреса",
-        callback_data="address:create"
-    )
-
     # кнопка без адреса
-    builder.button(
-        text="🚫 Без адреса",
-        callback_data="address:none"
-    )
+    if calback_type == "city":
+        builder.button(
+            text="🚫 Без адреса",
+            callback_data=f"{calback_type}:none"
+        )
 
     start = page * PAGE_SIZE
     end = start + PAGE_SIZE
-
-    current_templates = templates[start:end]
-    # шаблоны адресов
-
-    for index, template in enumerate(current_templates, start=start):
+    current_keys = list(templates.keys())[start:end]
+    for key in current_keys:
+        if calback_type == "city":
+            button_text = templates[key].city
+        elif calback_type == "address":
+            button_text = templates[key].adress
+        else:
+            raise ValueError('calback_type is not "city" or "address"')
         builder.button(
-            text=template,
-            callback_data=f"address:select:{index}"
+            text=button_text,
+            callback_data=f"{calback_type}:select:{key}"
         )
 
     # пагинация
@@ -94,12 +92,12 @@ def address_templates_keyboard(templates: list[AddressTemplate], page: int = 0) 
 
     if page > 0:
         nav_buttons.append(
-            ("⬅️", f"address:page:{page - 1}")
+            ("⬅️", f"{calback_type}:page:{page - 1}")
         )
 
     if end < len(templates):
         nav_buttons.append(
-            ("➡️", f"address:page:{page + 1}")
+            ("➡️", f"{calback_type}:page:{page + 1}")
         )
 
     for text, callback_data in nav_buttons:

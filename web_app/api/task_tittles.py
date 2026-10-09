@@ -45,7 +45,6 @@ async def update_task_tittle(request: Request):
         request_json['tittle'],
         request_json['is_sheduler']
         )
-    print(task_tittle)
     return "ok"
 
 @router.delete("/delete_tittle/{item_id}", status_code=status.HTTP_204_NO_CONTENT)

@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from telegram_bot.states import CreateTaskStates
-from telegram_bot.flows.create_task import show_address_selection
+from telegram_bot.flows.create_task import show_city_selection
 from telegram_bot.services.template_service import TemplateService
 
 
@@ -26,4 +26,4 @@ async def template_back_handler(callback: CallbackQuery, state: FSMContext):
 async def template_continue_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
     """Перейти на этап выбоа адреса"""
     # отображаем адреса
-    await show_address_selection(callback, state, template_service)
+    await show_city_selection(callback, state, template_service)

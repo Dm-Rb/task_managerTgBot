@@ -39,6 +39,7 @@ async def template_description_handler(message: Message, state: FSMContext):
     await state.update_data(template_description=message.text)
     # Показывает сообщение с текущим выбором + кнопки назад\подтвердить
     text = await get_task_creation_message_by_state_data(state)  # формируем текст сообщения из state.get_data()
+    text += "\n\nОтменить всё /cancel"
     await message.answer(
         text=text,
         reply_markup=keyboards.confirm_or_back_keyboard("task_description"),  # префикс для коллбеков

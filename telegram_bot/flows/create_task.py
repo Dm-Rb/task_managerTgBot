@@ -39,16 +39,42 @@ async def show_tittles_selection(message_or_callback: CallbackQuery or Message, 
         await state.update_data(scheduler=True)  # указывает, что это объект ScheduledTask. False -> Task
 
     # await state.set_state(CreateTaskStates.waiting_template_description)
+    
+async def show_city_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
+                                 template_service: TemplateService):
+    """Показывает список городов"""
+
+    text = "🏘 <b>Выберите город:</b>"
+    keyboard = keyboards.city_address_keyboard(template_service.cities, "city")
+    if isinstance(message_or_callback, Message):
+        await message_or_callback.answer(
+            text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )
+    else:  # нажатие на инлайн кнопку
+        await message_or_callback.message.edit_text(
+            text,
+            reply_markup=keyboard,
+            parse_mode="HTML"
+        )
+
+    await state.set_state(CreateTaskStates.choosing_address)
 
 
 async def show_address_selection(message_or_callback: CallbackQuery or Message, state: FSMContext,
-                                 template_service: TemplateService, additional_text=''):
+                                 template_service: TemplateService):
     """Показывает список шаблонов адресов"""
-    addresses_templates: list[AddressTemplate] = await template_service.get_all_adress_templates()
-
-    text = f"{additional_text}🏘 <b>Укажите адрес:</b>"
-
-    keyboard = keyboards.address_templates_keyboard(addresses_templates)
+    text = "📍 <b>Выберите адрес:</b>"
+    state_data = await state.get_data()
+    city_id = state_data.get('city_id')
+    address = {k: v for k, v in template_service.adreses.items() if v.city_id == city_id}
+    if not address:
+        alert_text = f"Нет ни одного связанного с городом {template_service.cities[city_id].city} адреса. \n"
+        alert_text += "Зайдите в веб-интерфейс в раздел |Управление Telegram-ботом| > |Точки| и создайте адреса для этого города."
+        return await message_or_callback.answer(alert_text, show_alert=True)
+        
+    keyboard = keyboards.city_address_keyboard(address, "address")
 
     if isinstance(message_or_callback, Message):
         await message_or_callback.answer(
@@ -227,7 +253,7 @@ async def show_schedule_task_confirmation(message_or_callback, state: FSMContext
 async def show_selected(callback: CallbackQuery, state: FSMContext, callback_data_prefix: str, show_delete_button=None):
     """Показывает сообщение с выбранной информацией + клавиатуру Продолжить/Назад"""
     text = await get_task_creation_message_by_state_data(state)  # формируем текст сообщения из state.get_data()
-    text += "\nОтменить всё /cancel"
+    text += "\n\nОтменить всё /cancel"
     await callback.message.edit_text(
         text=text,
         reply_markup=keyboards.confirm_or_back_keyboard(callback_data_prefix, show_delete_button),  # префикс для коллбеков

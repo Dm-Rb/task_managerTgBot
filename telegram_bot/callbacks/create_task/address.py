@@ -1,8 +1,8 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from telegram_bot.keyboards.create_task import address_templates_keyboard, confirm_delete
-from telegram_bot.flows.create_task import show_selected, show_address_selection, show_groups_selection
+from telegram_bot.keyboards.create_task import city_address_keyboard, confirm_delete
+from telegram_bot.flows.create_task import show_selected, show_city_selection, show_address_selection, show_groups_selection
 from telegram_bot.states import CreateTaskStates
 from telegram_bot.storage.task_cache import AddressTemplate
 from telegram_bot.services.template_service import TemplateService
@@ -12,7 +12,7 @@ from telegram_bot.services.group_service import GroupService
 router = Router()
 
 
-@router.callback_query(F.data.startswith("address:page:"))
+@router.callback_query(F.data.startswith(("city:page:", "address:page:")))
 async def address_page_handler(callback: CallbackQuery, template_service: TemplateService):
     """Пагинация шаблонов с адресами"""
     try:
@@ -20,100 +20,68 @@ async def address_page_handler(callback: CallbackQuery, template_service: Templa
     except:
         await callback.answer("Ошибка", show_alert=True)
         return
-
-    adresses: list[str] = await template_service.get_all_adress_templates()
-
-    await callback.message.edit_reply_markup(
-        reply_markup=address_templates_keyboard(adresses, page=page
+    
+    if F.data.startswith("city:page:"):
+        await callback.message.edit_reply_markup(
+            reply_markup=city_address_keyboard(template_service.cities, "city", page=page
+            )
         )
-    )
-
+    elif  F.data.startswith("address:page:"):
+        await callback.message.edit_reply_markup(
+            reply_markup=city_address_keyboard(template_service.adreses, "adress", page=page
+            )
+        )
+    else:
+        await callback.answer("Ошибка", show_alert=True) 
     await callback.answer()
 
 
-@router.callback_query(F.data == "address:create")
-async def create_task_template(callback: CallbackQuery, state: FSMContext):
-    """Создать шаблон"""
-    # удаляем сообщение целиком
-    await callback.message.delete()
-    # переводим FSM
-    await state.set_state(CreateTaskStates.waiting_address_template)
-    # отправляем новое сообщение
-    text = "Введите адрес для задачи 👇🏻"
-    await callback.message.answer(text)
-
-    await callback.answer()
-
-
-@router.callback_query(F.data.startswith("address:select:"))
+@router.callback_query(F.data.startswith(("city:select:", "address:select:")))
 async def address_select_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
     """Обработка нажатия на кнопку адреса"""
     try:
-        index = int(callback.data.split(":")[2])
+        key_ = int(callback.data.split(":")[2])
 
     except:
         await callback.answer("Ошибка", show_alert=True)
         return
+    if callback.data.startswith("city:select:"):
+        await state.update_data(city_id=key_, address=f"{template_service.cities[key_].city}")
+        await show_selected(callback, state, "city")
 
-    templates: list[AddressTemplate] = template_service.adress_templates
+    elif callback.data.startswith("address:select:"):
+        data = await state.get_data()
+        city_id = data.get("city_id")
+        await state.update_data(
+            address=f"{template_service.cities[city_id].city}, {template_service.adreses[key_].adress}"
+        )
+        await show_selected(callback, state, "address")
 
-    if index >= len(templates):
-        await callback.answer("Ошибка", show_alert=True)
-        return
-    template: str = templates[index]
-    await state.update_data(address=template)
-
-    await show_selected(callback, state, "address", "🗑 Удалить этот шаблон адреса" if len(templates) > 0 else None)
     await callback.answer()
 
 
-@router.callback_query(F.data == "address:none")
-async def address_none_handler(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "city:none")
+async def address_none_handler(callback: CallbackQuery, state: FSMContext, group_service: GroupService):
     """Обработка нажатия на кнопку Без адреса"""
     await state.update_data(address=None)
-    await show_selected(callback, state, "address")
+    await address_continue_handler(callback, state, group_service)
+
+
+@router.callback_query(F.data == "city:back")
+async def address_back_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
+    """Вернуться на этап выбора города"""
+    await show_city_selection(callback, state, template_service)
     await callback.answer()
 
 
-@router.callback_query(F.data == "address:back")
-async def address_back_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
-    """Вернуться на этап выбора шаблона задачи"""
+@router.callback_query(F.data == "city:continue")
+async def city_continue_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
+    """Перейти на этап выбора адреса"""
     await show_address_selection(callback, state, template_service)
     await callback.answer()
-
 
 @router.callback_query(F.data == "address:continue")
 async def address_continue_handler(callback: CallbackQuery, state: FSMContext, group_service: GroupService):
-    """Перейти на следующий этап выбора адреса"""
+    """Перейти на этап выбора группы"""
     await show_groups_selection(callback, state, group_service)
-    await callback.answer()
-
-
-# @router.callback_query(F.data == "address:delete")
-# async def create_task_template(callback: CallbackQuery, state: FSMContext, task_service: TaskService):
-#     state_data = await state.get_data()
-#     if state_data.get('address', None):
-#         task_service.remove_address_template(state_data['address'])
-#     await show_address_selection(callback, state, task_service)
-#     await callback.answer()
-
-
-@router.callback_query(F.data == "address:delete")
-async def address_delete_button(callback: CallbackQuery):
-    await callback.message.edit_text(text='Вы действительно хотите удалить этот объект?', reply_markup=confirm_delete("address"))
-    await callback.answer()
-
-
-@router.callback_query(F.data == "confirm_delete_no:address")
-async def address_delete_button_not_confirm(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
-    await show_address_selection(callback, state, template_service)
-    await callback.answer()
-
-
-@router.callback_query(F.data == "confirm_delete_yes:address")
-async def address_delete_button_confirm(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
-    state_data = await state.get_data()
-    if state_data.get('address', None):
-        await template_service.remove_adress_templates(state_data['address'])
-    await show_address_selection(callback, state, template_service)
     await callback.answer()

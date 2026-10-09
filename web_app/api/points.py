@@ -39,8 +39,6 @@ async def add_adress(request: Request):
     adress = await context.template_service.new_adress(adress=r['adress'], 
                                                      city_id=r['city_id']
                                                      )
-    # добавляес в запись в кеш в шалоны адресов для задач
-    context.template_service.adress_templates.append(f'{r['adress']}, {context.template_service.cities[r['city_id']].city}')
     return adress
 
 @router.post("/add_point")

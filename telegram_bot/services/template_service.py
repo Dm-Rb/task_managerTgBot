@@ -36,25 +36,13 @@ class TemplateService(TemplateCache):
         self.cities: dict[int, CityTable] = {item.id: item for item in cities}
         self.adreses: dict[int, AdressTable] = {item.id: item for item in adreses}
         self.points: dict[int, PointTable] = {item.id: item for item in points}
-        # Формируем строки из city + adress
-        
-        self.adress_templates = [f"{item.adress}, {self.cities[item.city_id].city}" for item in adreses]
-
         return
     
     def _adress_template(self, adress: AdressTable) -> str:
         city = self.cities.get(adress.city_id)
         city_name = city.city if city else ""
         return f"{adress.adress}, {city_name}"
-    
-    def _replace_adress_templates(self, mapping: dict[str, str]) -> None:
-        """Заменяет строки в self.adress_templates на месте (без перезаписи списка),
-        сохраняя порядок. mapping: {старая_строка: новая_строка}
-        """
-        if not mapping:
-            return
-        self.adress_templates[:] = [mapping.get(t, t) for t in self.adress_templates]
-    
+        
     async def create_new_task_tittle(self, title: str, is_sheduler: False) -> TaskTittleTemplateTable:
         r: TaskTittleTemplateTable = await self.task_tittle_database.create(title, is_sheduler)
         self.tittles[r.id] = r
@@ -91,27 +79,6 @@ class TemplateService(TemplateCache):
     async def update_task_tittle(self, id_: int, tiitle: str, is_sheduler: bool) -> None:
         r = await self.task_tittle_database.update(id_, tiitle, is_sheduler)
         self.tittles[id_] = r
-        return
-
-    ###
-    
-    async def get_all_adress_templates(self) -> list:
-        if not self.adress_templates:
-            cities_db = await self.city_database.get_all()
-            cities: dict = {item.id: item.city for item in cities_db}
-            # Далее записываем в кеш строки типа "city, adress"
-            adresses_db = await self.adress_database.get_all()
-            self.adress_templates = [f"{item.adress}, {cities[item.city_id]}" for item in adresses_db]
-        return self.adress_templates
-    
-    async def add_adress_templates(self, adress: str) -> None:
-        """ничего не пишем в бд, просто добавляем строку в кеш"""
-        self.adress_templates.append(adress)
-        return
-    
-    async def remove_adress_templates(self, adress: str) -> bool:
-        """ничего не удаляем из бд, просто удаляем из кеша"""
-        self.adress_templates.remove(adress)
         return
     
     def get_all_points_for_api(self) -> dict:
@@ -159,13 +126,6 @@ class TemplateService(TemplateCache):
         city = await self.city_database.update(id_, city)
         self.cities[city.id] = city
 
-        # Формируем новые строки уже с новым названием города
-        mapping = {
-            old: self._adress_template(self.adreses[k])
-            for k, old in old_templates.items()
-        }
-        self._replace_adress_templates(mapping)
-
         return {column.name: getattr(city, column.name) for column in city.__table__.columns}
     
     async def update_adress(self, id_, adress, city_id: str) -> dict:
@@ -175,15 +135,6 @@ class TemplateService(TemplateCache):
 
         adress = await self.adress_database.update(id_, adress, city_id)
         self.adreses[adress.id] = adress
-
-        new_template = self._adress_template(adress)
-
-        if old_template is None:
-            # в кеше шаблонов этого адреса не было — просто добавляем
-            if new_template not in self.adress_templates:
-                self.adress_templates.append(new_template)
-        else:
-            self._replace_adress_templates({old_template: new_template})
 
         return {column.name: getattr(adress, column.name) for column in adress.__table__.columns}
     
@@ -204,9 +155,6 @@ class TemplateService(TemplateCache):
             if self.points[key].city_id == id_:
                 self.points.pop(key)
 
-        # шаблоны (на месте)
-        self.adress_templates[:] = [t for t in self.adress_templates if t not in templates_to_remove]
-
     async def delete_adress(self, id_) -> None:
         adress = self.adreses.get(id_)
         template = self._adress_template(adress) if adress else None
@@ -218,10 +166,6 @@ class TemplateService(TemplateCache):
         for key in list(self.points.keys()):
             if self.points[key].adress_id == id_:
                 self.points.pop(key)
-
-        # шаблоны (на месте)
-        if template is not None:
-            self.adress_templates[:] = [t for t in self.adress_templates if t != template]
     
     async def delete_point(self, id_) -> None:
         await self.point_database.delete(id_)
