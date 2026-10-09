@@ -62,56 +62,9 @@
     opacity: 1;
 }
 
-.prompt-textarea {
-    width: 100%;
-    min-height: 180px;
-    border: 1px solid #d1d5db;
-    border-radius: 7px;
-    padding: 11px 14px;
-    outline: none;
-    font-family: inherit;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #111827;
-    background: #fff;
-    resize: vertical;
-}
-
-.prompt-textarea:focus {
-    border-color: #2563eb;
-}
-
-.prompt-textarea:disabled {
-    background: #f5f7fa;
-    color: #9ca3af;
-}
-
-.prompt-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-}
-
-.prompt-status {
-    font-size: 13px;
-    color: #16a34a;
-    opacity: 0;
-    transition: opacity .15s;
-}
-
-.prompt-status.show {
-    opacity: 1;
-}
-
-.prompt-status.error {
-    color: #dc2626;
-}
-
 @media (max-width: 700px) {
     .settings-card { padding: 18px; }
     .webhook-row { flex-direction: column; align-items: stretch; }
     .webhook-url { white-space: normal; word-break: break-all; }
     .copy-button { width: 100%; }
-    .prompt-actions { flex-direction: column; align-items: stretch; gap: 8px; }
 }

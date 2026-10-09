@@ -65,3 +65,19 @@ async def delete_call(request: Request, call_id: int):
     await context.telephony_database.delete_by_id(call_id)
 
     return {"status": "ok"}
+
+@router.get("/api/calls/prompt")
+async def get_call_prompt(request: Request):
+    auth_error = _check_auth(request)
+    if auth_error:
+        return auth_error
+    context: AppContext = request.app.state.context
+    return {"prompt": context.telephony_service.get_prompt()}
+
+@router.post("/api/calls/prompt")
+async def save_call_prompt(request: Request):
+    payload = await request.json()
+    prompt = payload.get("prompt", "")
+    context: AppContext = request.app.state.context
+    await context.telephony_service.update_system_prompt(prompt)
+    return {"status": "ok"}

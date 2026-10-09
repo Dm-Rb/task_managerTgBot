@@ -79,3 +79,41 @@ class CallRepository:
             )
 
             return result.scalar_one()
+        
+    async def update_by_id(
+        self,
+        call_id: int,
+        from_: str | None = None,
+        to_: str | None = None,
+        short_text: str | None = None,
+        text: str | None = None,
+        completed_at: datetime | None = None,
+        ) -> CallTable | None:
+        """
+        Обновляет переданные поля записи по id. Поля, которые не передали
+        (остались None), не изменяются. Возвращает обновлённый объект,
+        либо None, если записи с таким id нет.
+        """
+
+        async with AsyncSessionLocal() as session:
+
+            call = await session.get(CallTable, call_id)
+
+            if call is None:
+                return None
+
+            if from_ is not None:
+                call.from_ = from_
+            if to_ is not None:
+                call.to_ = to_
+            if short_text is not None:
+                call.short_text = short_text
+            if text is not None:
+                call.text = text
+            if completed_at is not None:
+                call.completed_at = completed_at
+
+            await session.commit()
+            await session.refresh(call)
+
+            return call

@@ -35,8 +35,7 @@ class GeminiClient:
             raise ValueError("Токен Gemini не задан")
         self._token = token
         self._prompt_path = Path(prompt_path or self.PROMPT_PATH)
-        self._system_prompt: str | None = None
-
+        self.system_prompt: str = self._load_system_prompt()
     # ===================== Публичные методы =====================
 
     async def analyze_text(self, text: str) -> str:
@@ -44,9 +43,8 @@ class GeminiClient:
         if not text or not text.strip():
             raise ValueError("Пустой текст для анализа")
 
-        system_prompt = await self._get_system_prompt()
         payload = {
-            "systemInstruction": {"parts": [{"text": system_prompt}]},
+            "systemInstruction": {"parts": [{"text": self.system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": text}]}],
             "generationConfig": {
                 "temperature": self.TEMPERATURE,
@@ -82,13 +80,8 @@ class GeminiClient:
             )
         return text
 
-    async def _get_system_prompt(self) -> str:
-        """Читает промпт из JSON-файла (при первом обращении) и кэширует."""
-        if self._system_prompt is None:
-            self._system_prompt = await asyncio.to_thread(self._load_system_prompt)
-        return self._system_prompt
-
     def _load_system_prompt(self) -> str:
+        """Читает системный промпт из JSON-файла."""
         if not self._prompt_path.is_file():
             raise FileNotFoundError(f"Файл с промптом не найден: {self._prompt_path}")
         try:
@@ -143,3 +136,15 @@ class GeminiClient:
         raise GeminiError(
             f"Все {self.RETRY_ATTEMPTS} попыток исчерпаны, последняя ошибка: {last_error}"
         )
+        
+    def _save_system_prompt(self, prompt: str) -> None:
+        """Записывает промпт в JSON-файл."""
+        with open(self._prompt_path, "w", encoding="utf-8") as f:
+            json.dump({self.PROMPT_KEY: prompt}, f, ensure_ascii=False, indent=2)
+        
+    async def update_system_prompt(self, new_prompt: str) -> None:
+        if not isinstance(new_prompt, str) or not new_prompt.strip():
+            raise ValueError("Новый системный промпт пустой или не строка")
+        self.system_prompt = new_prompt
+        await asyncio.to_thread(self._save_system_prompt, new_prompt)
+                   

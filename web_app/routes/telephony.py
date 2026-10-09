@@ -48,13 +48,12 @@ async def webhook_call(
     x_key: str | None = Header(default=None),        # читает заголовок x-key
     x_filename: str | None = Header(default=None),   # читает заголовок x-filename
     ):
-    # 1. Проверка ключа
+
     if not x_key or not hmac.compare_digest(
         x_key.encode("utf-8"), settings.WEBHOOK_KEY.encode("utf-8")
     ):
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    # 2. Имя файла (на случай кириллицы в URL-кодировке)
     filename = unquote(x_filename) if x_filename else None
 
     audio = await request.body()
@@ -63,6 +62,6 @@ async def webhook_call(
     context: AppContext = request.app.state.context
 
 
-    # 4. Распознавание в фоне, ответ отправителю сразу
+    # Распознавание в фоне, ответ отправителю сразу
     background_tasks.add_task(context.telephony_service.transcribe_call, audio, filename)
-    return {"status": "accepted", "filename": filename, "size": len(audio)}
+    return {"status": "ok"}
