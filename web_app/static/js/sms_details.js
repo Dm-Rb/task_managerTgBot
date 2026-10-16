@@ -86,10 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         from.append(fromIcon, fromNumber);
 
-        const text = document.createElement("div");
-        text.className = "sms-text";
-        text.textContent = item.text;
-
+        const text = renderSmsText(item.text);
         const expandButton = document.createElement("button");
         expandButton.className = "sms-expand-button hidden";
         expandButton.type = "button";
@@ -139,6 +136,61 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function renderSmsText(raw) {
+        const container = document.createElement("div");
+        container.className = "sms-text";
+
+        const value = (raw ?? "").replace(/\\r\\n|\\n|\\r/g, "\n");
+        const lines = value
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter((line) => line !== "");
+
+        // переносов нет (или это одна строка) - показываем как есть
+        if (lines.length <= 1) {
+            container.textContent = value;
+            return container;
+        }
+
+        container.classList.add("sms-text-table");
+
+        const table = document.createElement("table");
+        table.className = "sms-table";
+        const tbody = document.createElement("tbody");
+
+        for (const line of lines) {
+
+            const tr = document.createElement("tr");
+            const colonIndex = line.indexOf(":");
+
+            const key = colonIndex > 0 ? line.slice(0, colonIndex).trim() : "";
+            const val = colonIndex > 0 ? line.slice(colonIndex + 1).trim() : "";
+
+            if (key && val && key.length <= 30) {
+                const tdKey = document.createElement("td");
+                tdKey.className = "sms-table-key";
+                tdKey.textContent = key;
+
+                const tdVal = document.createElement("td");
+                tdVal.className = "sms-table-value";
+                tdVal.textContent = val;
+
+                tr.append(tdKey, tdVal);
+            } else {
+                const td = document.createElement("td");
+                td.colSpan = 2;
+                td.textContent = line;
+                tr.append(td);
+            }
+
+            tbody.appendChild(tr);
+        }
+
+        table.appendChild(tbody);
+        container.appendChild(table);
+
+        return container;
+    }
     // --- пагинация ---
 
     function renderPagination() {

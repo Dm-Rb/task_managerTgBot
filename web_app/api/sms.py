@@ -3,8 +3,14 @@ from fastapi.responses import JSONResponse
 from core.app_context import AppContext
 from pydantic import BaseModel, Field
 from datetime import datetime
+import json
+import re
+from datetime import datetime
+from pydantic import BaseModel, Field, field_validator
+import logging
 
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -29,18 +35,64 @@ class IncomingSms(BaseModel):
     from_: str = Field(alias="from")
     text: str
     sentStamp: str
+    sim: str | None = None
+
     model_config = {"populate_by_name": True}
+
+@field_validator("sentStamp", mode="before")
+@classmethod
+def stamp_to_str(cls, v):
+    # шлюз может прислать число вместо строки
+    return str(v)
+
+
+# Запасной разбор на случай, когда в тексте SMS есть неэкранированные " или \
+_FALLBACK_RE = re.compile(
+    r'"from"\s*:\s*"(?P<from_>.*?)"\s*,\s*'
+    r'"text"\s*:\s*"(?P<text>.*)"\s*,\s*'
+    r'"sentStamp"\s*:\s*"?(?P<sentStamp>\d+)"?',
+    re.DOTALL,
+)
+
+
+def clean_text(s: str) -> str:
+    """Убирает NUL и заменяет одиночные суррогаты, чтобы запись в SQLite не падала."""
+    s = s.replace("\x00", "")
+    return s.encode("utf-8", errors="replace").decode("utf-8")
+
+
+def parse_sms_body(raw: bytes) -> IncomingSms:
+    body = raw.decode("utf-8", errors="replace")
+
+    # Основной путь: strict=False разрешает сырые \n и \t внутри строк
+    try:
+        return IncomingSms.model_validate(json.loads(body, strict=False))
+    except ValueError:
+        pass
+
+    # Запасной путь: регулярка по фиксированному порядку полей
+    m = _FALLBACK_RE.search(body)
+    if m:
+        return IncomingSms.model_validate(m.groupdict())
+
+    raise ValueError("unparsable body")
 
 
 @router.post("/webhook/sms")
-async def receive_sms(request: Request, payload: IncomingSms):
+async def receive_sms(request: Request):
     """Принимает входящее СМС от шлюза и сохраняет его в БД."""
-
     context: AppContext = request.app.state.context
+    raw = await request.body()
+
+    try:
+        payload = parse_sms_body(raw)
+    except ValueError:
+        logger.error("Bad SMS payload: %r", raw)
+        raise HTTPException(status_code=422, detail="Invalid payload")
 
     await context.sms_database.create(
-        from_=payload.from_,
-        text=payload.text,
+        from_=clean_text(payload.from_),
+        text=clean_text(payload.text),
         sent_stamp=payload.sentStamp,
         completed_at=datetime.now(),
     )

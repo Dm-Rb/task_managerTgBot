@@ -127,3 +127,45 @@
     .sms-card { padding: 14px; gap: 10px; }
     .pagination { flex-wrap: wrap; }
 }
+/* вариант с таблицей: line-clamp для таблиц не работает, ограничиваем по высоте */
+.sms-text.sms-text-table {
+    display: block;
+    -webkit-line-clamp: unset;
+    max-height: 130px;
+    overflow: hidden;
+    white-space: normal;
+}
+
+.sms-text.sms-text-table.expanded {
+    max-height: none;
+    overflow: visible;
+}
+
+.sms-table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 420px;
+    font-size: 14px;
+}
+
+.sms-table td {
+    padding: 3px 10px;
+    border-bottom: 1px solid #f0f1f3;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.sms-table tr:last-child td {
+    border-bottom: none;
+}
+
+.sms-table-key {
+    color: #6b7280;
+    white-space: nowrap;
+    width: 1%;
+}
+
+.sms-table-value {
+    color: #111827;
+    font-variant-numeric: tabular-nums;
+}
