@@ -15,20 +15,21 @@ router = Router()
 @router.callback_query(F.data.startswith(("city:page:", "address:page:")))
 async def address_page_handler(callback: CallbackQuery, template_service: TemplateService):
     """Пагинация шаблонов с адресами"""
+    print(callback.data)
     try:
         page = int(callback.data.split(":")[2])
     except:
         await callback.answer("Ошибка", show_alert=True)
         return
     
-    if F.data.startswith("city:page:"):
+    if callback.data.startswith("city:page:"):
         await callback.message.edit_reply_markup(
             reply_markup=city_address_keyboard(template_service.cities, "city", page=page
             )
         )
-    elif  F.data.startswith("address:page:"):
+    elif  callback.data.startswith("address:page:"):
         await callback.message.edit_reply_markup(
-            reply_markup=city_address_keyboard(template_service.adreses, "adress", page=page
+            reply_markup=city_address_keyboard(template_service.adreses, "address", page=page
             )
         )
     else:
