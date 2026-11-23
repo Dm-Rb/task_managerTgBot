@@ -79,7 +79,6 @@ def city_address_keyboard(templates: dict, calback_type: str, page: int = 0) -> 
         if calback_type == "city":
             button_text = templates[key].city
         elif calback_type == "address":
-            print(key, templates[key].adress)  
             button_text = templates[key].adress
         else:
             raise ValueError('calback_type is not "city" or "adress"')
@@ -87,16 +86,15 @@ def city_address_keyboard(templates: dict, calback_type: str, page: int = 0) -> 
             text=button_text,
             callback_data=f"{calback_type}:select:{key}"
         )
-
+    
     # пагинация
     nav_buttons = []
-
     if page > 0:
         nav_buttons.append(
             ("⬅️ Назад", f"{calback_type}:page:{page - 1}")
         )
-
-    if end < len(current_keys):
+    
+    if end < len(templates.keys()):
         nav_buttons.append(
             ("Вперёд ➡️", f"{calback_type}:page:{page + 1}")
         )

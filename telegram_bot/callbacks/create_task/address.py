@@ -13,9 +13,8 @@ router = Router()
 
 
 @router.callback_query(F.data.startswith(("city:page:", "address:page:")))
-async def address_page_handler(callback: CallbackQuery, template_service: TemplateService):
+async def city_address_page_handler(callback: CallbackQuery, template_service: TemplateService, state: FSMContext):
     """Пагинация шаблонов с адресами"""
-    print(callback.data)
     try:
         page = int(callback.data.split(":")[2])
     except:
@@ -28,8 +27,11 @@ async def address_page_handler(callback: CallbackQuery, template_service: Templa
             )
         )
     elif  callback.data.startswith("address:page:"):
+        state_data = await state.get_data()
+        city_id = state_data.get('city_id')
+        address = {k: v for k, v in template_service.adreses.items() if v.city_id == city_id}
         await callback.message.edit_reply_markup(
-            reply_markup=city_address_keyboard(template_service.adreses, "address", page=page
+            reply_markup=city_address_keyboard(address, "address", page=page
             )
         )
     else:
@@ -38,7 +40,7 @@ async def address_page_handler(callback: CallbackQuery, template_service: Templa
 
 
 @router.callback_query(F.data.startswith(("city:select:", "address:select:")))
-async def address_select_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
+async def city_address_select_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
     """Обработка нажатия на кнопку адреса"""
     try:
         key_ = int(callback.data.split(":")[2])
@@ -47,7 +49,6 @@ async def address_select_handler(callback: CallbackQuery, state: FSMContext, tem
         await callback.answer("Ошибка", show_alert=True)
         return
     if callback.data.startswith("city:select:"):
-        print(key_)
         await state.update_data(city_id=key_, address=f"{template_service.cities[key_].city}")
         await show_selected(callback, state, "city")
 
