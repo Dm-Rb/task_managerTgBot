@@ -66,7 +66,6 @@ def city_address_keyboard(templates: dict, calback_type: str, page: int = 0) -> 
 
     builder = InlineKeyboardBuilder()
     # кнопка без адреса
-    print(calback_type)
     if calback_type == "city":
         builder.button(
             text="🚫 Без адреса",
@@ -80,6 +79,7 @@ def city_address_keyboard(templates: dict, calback_type: str, page: int = 0) -> 
         if calback_type == "city":
             button_text = templates[key].city
         elif calback_type == "address":
+            print(key, templates[key].adress)  
             button_text = templates[key].adress
         else:
             raise ValueError('calback_type is not "city" or "adress"')
@@ -96,7 +96,7 @@ def city_address_keyboard(templates: dict, calback_type: str, page: int = 0) -> 
             ("⬅️ Назад", f"{calback_type}:page:{page - 1}")
         )
 
-    if end < len(templates):
+    if end < len(current_keys):
         nav_buttons.append(
             ("Вперёд ➡️", f"{calback_type}:page:{page + 1}")
         )

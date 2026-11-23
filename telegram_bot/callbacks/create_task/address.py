@@ -47,6 +47,7 @@ async def address_select_handler(callback: CallbackQuery, state: FSMContext, tem
         await callback.answer("Ошибка", show_alert=True)
         return
     if callback.data.startswith("city:select:"):
+        print(key_)
         await state.update_data(city_id=key_, address=f"{template_service.cities[key_].city}")
         await show_selected(callback, state, "city")
 
@@ -69,7 +70,7 @@ async def address_none_handler(callback: CallbackQuery, state: FSMContext, group
 
 
 @router.callback_query(F.data == "city:back")
-async def address_back_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
+async def city_back_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
     """Вернуться на этап выбора города"""
     await show_city_selection(callback, state, template_service)
     await callback.answer()
@@ -78,6 +79,12 @@ async def address_back_handler(callback: CallbackQuery, state: FSMContext, templ
 @router.callback_query(F.data == "city:continue")
 async def city_continue_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
     """Перейти на этап выбора адреса"""
+    await show_address_selection(callback, state, template_service)
+    await callback.answer()
+    
+@router.callback_query(F.data == "address:back")
+async def address_back_handler(callback: CallbackQuery, state: FSMContext, template_service: TemplateService):
+    """Вернуться на этап выбора города"""
     await show_address_selection(callback, state, template_service)
     await callback.answer()
 
